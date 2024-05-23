@@ -1,7 +1,5 @@
 'use client';
-
 import { ArrowUpRight } from 'lucide-react';
-import Link from 'next/link';
 import React from 'react';
 import {
   Carousel,
@@ -11,40 +9,30 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel';
 
+type NatureItem = {
+  id: number;
+  title: string;
+  description: string;
+};
+
 type NatureCardProps = {
-  items: {
-    id: number;
-    title: string;
-    description: string;
-    imgUrl: string;
-    place: string;
-  }[];
+  items: NatureItem[];
 };
 
 export default function NatureCard({ items }: NatureCardProps) {
-  console.log(items); // デバッグ用
-
   return (
     <Carousel className="w-full relative">
       <CarouselContent className="flex space-x-4">
         {items.map((item) => (
           <CarouselItem key={item.id} className="flex-none w-96">
             <div className="relative p-4 border rounded-md shadow-sm bg-card">
-              <div className="aspect-video border relative mb-2 rounded" style={{ backgroundImage: `url(${item.imgUrl})`, backgroundSize: 'cover' }}></div>
+              <div className="aspect-video border relative mb-2 rounded">
+                {/* ここに画像などを表示 */}
+              </div>
               <h2 className="text-lg font-semibold">{item.title}</h2>
-              <span className="absolute inset-0"></span>
               <ArrowUpRight className="inline" size={20} />
               <div className="flex relative z-10 flex-wrap mt-2 gap-2">
-                <Link href="">
-                  <p className="border whitespace-nowrap text-muted-foreground bg-muted rounded text-xs px-1 py-1.5">
-                    {item.description}
-                  </p>
-                </Link>
-                <Link href="">
-                  <p className="border whitespace-nowrap text-muted-foreground bg-muted rounded text-xs px-1 py-1.5">
-                    {item.place}
-                  </p>
-                </Link>
+                {item.description}
               </div>
             </div>
           </CarouselItem>

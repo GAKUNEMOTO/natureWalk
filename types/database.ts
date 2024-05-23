@@ -11,43 +11,25 @@ export type Database = {
     Tables: {
       natures: {
         Row: {
-          created_at: string
+          createdAt: string
           description: string
           id: number
-          imgUrl: string
-          place: string
+          natureImg: string
           title: string
         }
         Insert: {
-          created_at?: string
+          createdAt?: string
           description: string
           id?: number
-          imgUrl: string
-          place: string
+          natureImg: string
           title: string
         }
         Update: {
-          created_at?: string
+          createdAt?: string
           description?: string
           id?: number
-          imgUrl?: string
-          place?: string
+          natureImg?: string
           title?: string
-        }
-        Relationships: []
-      }
-      user: {
-        Row: {
-          rating: number
-          userId: string
-        }
-        Insert: {
-          rating: number
-          userId?: string
-        }
-        Update: {
-          rating?: number
-          userId?: string
         }
         Relationships: []
       }

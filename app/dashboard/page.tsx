@@ -9,8 +9,6 @@ type NatureItem = {
   id: number;
   title: string;
   description: string;
-  imgUrl: string;
-  place: string;
 };
 
 export default function Page() {
