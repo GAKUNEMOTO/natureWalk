@@ -16,6 +16,7 @@ export type Database = {
           id: number
           natureImg: string
           title: string
+          user_id: string
         }
         Insert: {
           createdAt?: string
@@ -23,6 +24,7 @@ export type Database = {
           id?: number
           natureImg: string
           title: string
+          user_id?: string
         }
         Update: {
           createdAt?: string
@@ -30,6 +32,7 @@ export type Database = {
           id?: number
           natureImg?: string
           title?: string
+          user_id?: string
         }
         Relationships: []
       }

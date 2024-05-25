@@ -11,7 +11,7 @@ export async function uploadFile(formData: FormData) {
     }
 
     const supabase = createClient();
-    const filePath = `natureImg/${image.name}`;
+    const filePath = `nature_img/${image.name}`;
 
     const { error } = await supabase.storage
         .from('nature')

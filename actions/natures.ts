@@ -11,7 +11,14 @@ export const createItem = async (formData: TablesInsert<'natures'>): Promise<Tab
     throw new Error('ログインしてください');
   }
 
-  const { data, error } = await supabase.from("natures").insert(formData).select().single();
+  const formDataWithUserId = {
+    ...formData,
+    user_id: user.id,
+  }
+  
+  const { data, error } = await supabase.from("natures").insert(formDataWithUserId).select().single();
+
+  
 
   if (error) {
     throw new Error(error.message);

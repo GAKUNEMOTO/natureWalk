@@ -1,5 +1,6 @@
 'use client';
-import React from 'react';
+
+import React, { useState } from 'react';
 import { z } from 'zod';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -11,21 +12,34 @@ import { useRouter } from 'next/navigation';
 import { createItem } from '@/actions/natures';
 import { useNatureContext } from '@/context/NatureContext';
 import { FormData } from '@/types/form-data';
-import Uploader from './uploader';
+import Image from 'next/image';
+import { NatureFormData } from '@/types/nature';
 
 export const formSchema = z.object({
   title: z.string().min(1, "タイトルは必須です").max(15, "タイトルは最大15文字までです"),
   description: z.string().min(1, "説明は必須です").max(50, "説明は最大50文字までです"),
-  natureImg: z.string()
+  natureImg: z.instanceof(File)
 });
 
+
+
+const fileToBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = error => reject(error);
+  });
+};
 
 export default function ItemForm() {
   const router = useRouter();
   const { toast } = useToast();
   const { addNatureItem } = useNatureContext();
+  const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
 
-  const form = useForm<FormData>({
+  const form = useForm<NatureFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: '',
@@ -34,18 +48,39 @@ export default function ItemForm() {
     },
   });
 
-  const onSubmit: SubmitHandler<FormData> = async (data) => {
+  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const selectedFile = e.target.files[0];
+      setFile(selectedFile);
+      setPreview(URL.createObjectURL(selectedFile));
+      form.setValue('natureImg', selectedFile);
+    }
+  };
+
+  const onSubmit: SubmitHandler<NatureFormData> = async (data) => {
     try {
-      const newItem = await createItem(data);
+      let natureImgString: string;
+
+      if (data.natureImg instanceof File) {
+        natureImgString = await fileToBase64(data.natureImg);
+      } else {
+        natureImgString = data.natureImg;
+      }
+
+      const newItem = await createItem({
+        ...data,
+        natureImg: natureImgString,
+      });
+
       addNatureItem(newItem);
       toast({
         title: 'シェアしました',
         description: "投稿一覧をご確認ください",
       });
       form.reset();
+      setFile(null);
+      setPreview(null);
       router.push('/dashboard'); 
-
-
     } catch (error) {
       toast({
         variant: "destructive",
@@ -53,7 +88,6 @@ export default function ItemForm() {
         description: "管理者に連絡してください",
       });
     }
-
   };
 
   return (
@@ -91,7 +125,21 @@ export default function ItemForm() {
             </FormItem>
           )}
         />
-        <Uploader/>
+        <FormItem>
+          <FormLabel>画像</FormLabel>
+          <FormControl>
+            <Input type="file" onChange={onFileChange} />
+          </FormControl>
+          {preview && (
+            <div className="relative aspect-video border mt-4 rounded">
+              <Image src={preview} layout="fill" objectFit="cover" className="rounded" alt="Preview" />
+            </div>
+          )}
+          <FormDescription>
+            画像をアップロードしてください
+          </FormDescription>
+          <FormMessage />
+        </FormItem>
         <div className="flex gap-3">
           <Button type="submit">{'投稿'}</Button>
         </div>

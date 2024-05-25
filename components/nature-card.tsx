@@ -1,4 +1,5 @@
 'use client';
+
 import { ArrowUpRight } from 'lucide-react';
 import React from 'react';
 import {
@@ -8,11 +9,13 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
+import Image from 'next/image';
 
 type NatureItem = {
   id: number;
   title: string;
   description: string;
+  natureImg: string;
 };
 
 type NatureCardProps = {
@@ -27,7 +30,13 @@ export default function NatureCard({ items }: NatureCardProps) {
           <CarouselItem key={item.id} className="flex-none w-96">
             <div className="relative p-4 border rounded-md shadow-sm bg-card">
               <div className="aspect-video border relative mb-2 rounded">
-                {/* ここに画像などを表示 */}
+                <Image
+                  src={`/${item.natureImg}.svg`}
+                  layout="fill"
+                  objectFit="cover"
+                  className="rounded"
+                  alt='nature image'
+                  />
               </div>
               <h2 className="text-lg font-semibold">{item.title}</h2>
               <ArrowUpRight className="inline" size={20} />
