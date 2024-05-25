@@ -14,9 +14,6 @@ export const getNatures = async () => {
   return data;
 };
 
-
-
-
 export const searchNature = async (keyword: string) => {
     const supabase = createClient();
 

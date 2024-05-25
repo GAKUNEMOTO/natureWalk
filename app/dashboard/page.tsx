@@ -4,11 +4,14 @@ import React, { useEffect, useState } from 'react';
 import NatureCard from '@/components/nature-card';
 import { Button } from '@/components/ui/button';
 import { getNatures } from '@/data/nature';
+import { TagId } from '@/types/tag';
 
 type NatureItem = {
   id: number;
   title: string;
   description: string;
+  natureImg: string;
+  tags: TagId[];
 };
 
 export default function Page() {

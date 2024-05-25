@@ -15,6 +15,7 @@ export type Database = {
           description: string
           id: number
           natureImg: string
+          tag: string[] | null
           title: string
           user_id: string
         }
@@ -23,6 +24,7 @@ export type Database = {
           description: string
           id?: number
           natureImg: string
+          tag?: string[] | null
           title: string
           user_id?: string
         }
@@ -31,6 +33,7 @@ export type Database = {
           description?: string
           id?: number
           natureImg?: string
+          tag?: string[] | null
           title?: string
           user_id?: string
         }

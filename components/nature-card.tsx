@@ -9,13 +9,16 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
-import Image from 'next/image';
+import Link from 'next/link';
+import { TagId } from '@/types/tag';
+import { getTagLabel } from '@/lib/tag';
 
 type NatureItem = {
   id: number;
   title: string;
   description: string;
-  natureImg: string; // This should be a complete URL
+  natureImg: string; 
+  tags: TagId[];
 };
 
 type NatureCardProps = {
@@ -23,23 +26,31 @@ type NatureCardProps = {
 };
 
 export default function NatureCard({ items }: NatureCardProps) {
-  const publicURL = process.env.NEXT_PUBLIC_SUPABASE_STORAGE;
-
   return (
     <Carousel className="w-full relative">
       <CarouselContent className="flex space-x-4">
         {items.map((item) => (
           <CarouselItem key={item.id} className="flex-none w-96">
             <div className="relative p-4 border rounded-md shadow-sm bg-card">
-              <div className="aspect-video border relative mb-2 rounded">
+              <div className='aspect-video overflow-hidden border relative mb-2 rounded'>
                 <img
-                  src={`${item.natureImg}`}
-                  className="rounded object-cover "
+                  src={item.natureImg}
+                  className="w-full h-full rounded object-center object-cover"
                   alt="nature image"
                 />
               </div>
               <h2 className="text-lg font-semibold">{item.title}</h2>
               <ArrowUpRight className="inline" size={20} />
+              <div className="flex relative z-10 flex-wrap mt-2 gap-2">
+                {item.tags && item.tags.length > 0 && item.tags.map((tag) => {
+                  const tagLabel = getTagLabel(tag);
+                  return (
+                    <Link key={tag} href={`/tags/${tag}`} passHref>
+                      {tagLabel?.label || ''}
+                    </Link>
+                  );
+                })}
+              </div>
               <div className="flex relative z-10 flex-wrap mt-2 gap-2">
                 {item.description}
               </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { z } from 'zod';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -11,10 +11,12 @@ import { useToast } from '@/components/ui/use-toast';
 import { useRouter } from 'next/navigation';
 import { createItem } from '@/actions/natures';
 import { useNatureContext } from '@/context/NatureContext';
-import { FormData } from '@/types/form-data';
 import Image from 'next/image';
 import { NatureFormData } from '@/types/nature';
 import { createClient } from '@/lib/supabase/client'; // Import your Supabase client
+import KenSelecter from './ken-selecter';
+import NatureCard from '@/components/nature-card';
+
 
 const fileSchema = (typeof window !== "undefined" && typeof File !== "undefined") ? z.instanceof(File) : z.any();
 
@@ -22,15 +24,11 @@ export const formSchema = z.object({
   title: z.string().min(1, "タイトルは必須です").max(15, "タイトルは最大15文字までです"),
   description: z.string().min(1, "説明は必須です").max(50, "説明は最大50文字までです"),
   natureImg: fileSchema,
+  tag: z.string().min(1, "タグは必須です"),
 });
 
-const fileToBase64 = (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = error => reject(error);
-  });
+const sanitizeFileName = (fileName: string) => {
+  return fileName.replace(/[^a-z0-9.]/gi, '_').toLowerCase();
 };
 
 export default function ItemForm() {
@@ -39,6 +37,8 @@ export default function ItemForm() {
   const { addNatureItem } = useNatureContext();
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [isTagSelected, setIsTagSelected] = useState<boolean>(false);
 
   const form = useForm<NatureFormData>({
     resolver: zodResolver(formSchema),
@@ -46,8 +46,13 @@ export default function ItemForm() {
       title: '',
       description: '',
       natureImg: '',
+      tag: '',
     },
   });
+
+  useEffect(() => {
+    setIsTagSelected(!!selectedTag);
+  }, [selectedTag]);
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -58,12 +63,19 @@ export default function ItemForm() {
     }
   };
 
+  const onSelectTag = (value: string) => {
+    setSelectedTag(value);
+    form.setValue('tag', value);
+  };
+
   const onSubmit: SubmitHandler<NatureFormData> = async (data) => {
     try {
       if (!file) {
         throw new Error("ファイルが選択されていません");
       }
-      const filePath = `nature_img/${Date.now()}_${file.name}`;
+
+      const sanitizedFileName = sanitizeFileName(file.name);
+      const filePath = `nature_img/${Date.now()}_${sanitizedFileName}`;
       const supabase = createClient();
       console.log("Uploading file:", file);
       const { error: uploadError } = await supabase.storage
@@ -88,6 +100,7 @@ export default function ItemForm() {
       const newItem = await createItem({
         ...data,
         natureImg: urlData.publicUrl,
+        tag: selectedTag ? [selectedTag] : [],
       });
 
       addNatureItem(newItem);
@@ -98,6 +111,7 @@ export default function ItemForm() {
       form.reset();
       setFile(null);
       setPreview(null);
+      setSelectedTag(null);
       router.push('/dashboard'); 
     } catch (error) {
       toast({
@@ -149,20 +163,41 @@ export default function ItemForm() {
           <FormControl>
             <Input type="file" onChange={onFileChange} />
           </FormControl>
-          {preview && (
-            <div className="relative aspect-video border mt-4 rounded">
-              <Image src={preview} layout="fill" objectFit="cover" className="rounded" alt="Preview" />
-            </div>
-          )}
           <FormDescription>
             画像をアップロードしてください
           </FormDescription>
           <FormMessage />
         </FormItem>
+
+        <FormField
+          control={form.control}
+          name="tag"
+          render={() => (
+            <FormItem>
+              <FormLabel>タグ</FormLabel>
+              <KenSelecter onSelect={onSelectTag} />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <div className="flex gap-3">
-          <Button type="submit">{'投稿'}</Button>
+          <Button type="submit" disabled={!isTagSelected}>
+            {'投稿'}
+          </Button>
         </div>
       </form>
+      {/* Pass the form data to NatureCard for display */}
+      <NatureCard
+        items={[
+          {
+            id: 1,
+            title: form.watch('title'),
+            description: form.watch('description'),
+            natureImg: preview || '',
+            tags: selectedTag ? [selectedTag] : [],
+          },
+        ]}
+      />
     </Form>
   );
 }
