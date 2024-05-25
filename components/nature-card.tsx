@@ -25,7 +25,10 @@ type NatureCardProps = {
   items: NatureItem[];
 };
 
+
+
 export default function NatureCard({ items }: NatureCardProps) {
+
   return (
     <Carousel className="w-full relative">
       <CarouselContent className="flex space-x-4">
@@ -40,7 +43,6 @@ export default function NatureCard({ items }: NatureCardProps) {
                 />
               </div>
               <h2 className="text-lg font-semibold">{item.title}</h2>
-              <ArrowUpRight className="inline" size={20} />
               <div className="flex relative z-10 flex-wrap mt-2 gap-2">
                 {item.tags && item.tags.length > 0 && item.tags.map((tag) => {
                   const tagLabel = getTagLabel(tag);

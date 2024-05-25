@@ -22,7 +22,7 @@ const fileSchema = (typeof window !== "undefined" && typeof File !== "undefined"
 
 export const formSchema = z.object({
   title: z.string().min(1, "タイトルは必須です").max(15, "タイトルは最大15文字までです"),
-  description: z.string().min(1, "説明は必須です").max(50, "説明は最大50文字までです"),
+  description: z.string().min(1, "説明は必須です").max(100, "説明は最大100文字までです"),
   natureImg: fileSchema,
   tag: z.string().min(1, "タグは必須です"),
 });
@@ -97,7 +97,7 @@ export default function ItemForm() {
 
       console.log("File uploaded to:", urlData.publicUrl);
 
-      const newItem = await createItem({
+     const newItem = await createItem({
         ...data,
         natureImg: urlData.publicUrl,
         tag: selectedTag ? [selectedTag] : [],

@@ -1,3 +1,4 @@
+'use server';
 import { kenTags } from "@/data/tag";
 import { TagId } from "@/types/tag";
 
