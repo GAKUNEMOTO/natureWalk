@@ -14,14 +14,15 @@ import { useNatureContext } from '@/context/NatureContext';
 import { FormData } from '@/types/form-data';
 import Image from 'next/image';
 import { NatureFormData } from '@/types/nature';
+import { createClient } from '@/lib/supabase/client'; // Import your Supabase client
+
+const fileSchema = (typeof window !== "undefined" && typeof File !== "undefined") ? z.instanceof(File) : z.any();
 
 export const formSchema = z.object({
   title: z.string().min(1, "タイトルは必須です").max(15, "タイトルは最大15文字までです"),
   description: z.string().min(1, "説明は必須です").max(50, "説明は最大50文字までです"),
-  natureImg: z.instanceof(File)
+  natureImg: fileSchema,
 });
-
-
 
 const fileToBase64 = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
@@ -59,17 +60,34 @@ export default function ItemForm() {
 
   const onSubmit: SubmitHandler<NatureFormData> = async (data) => {
     try {
-      let natureImgString: string;
-
-      if (data.natureImg instanceof File) {
-        natureImgString = await fileToBase64(data.natureImg);
-      } else {
-        natureImgString = data.natureImg;
+      if (!file) {
+        throw new Error("ファイルが選択されていません");
       }
+      const filePath = `nature_img/${Date.now()}_${file.name}`;
+      const supabase = createClient();
+      console.log("Uploading file:", file);
+      const { error: uploadError } = await supabase.storage
+        .from('nature')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        console.error("Upload error:", uploadError);
+        throw new Error(uploadError.message);
+      }
+
+      const { data: urlData } = supabase.storage
+        .from('nature')
+        .getPublicUrl(filePath);
+
+      if (!urlData) {
+        throw new Error("Failed to get public URL");
+      }
+
+      console.log("File uploaded to:", urlData.publicUrl);
 
       const newItem = await createItem({
         ...data,
-        natureImg: natureImgString,
+        natureImg: urlData.publicUrl,
       });
 
       addNatureItem(newItem);
@@ -85,8 +103,9 @@ export default function ItemForm() {
       toast({
         variant: "destructive",
         title: "エラーが発生しました。",
-        description: "管理者に連絡してください",
+        description: (error as Error).message,
       });
+      console.error("Submit error:", error);
     }
   };
 

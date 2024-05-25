@@ -15,7 +15,7 @@ type NatureItem = {
   id: number;
   title: string;
   description: string;
-  natureImg: string;
+  natureImg: string; // This should be a complete URL
 };
 
 type NatureCardProps = {
@@ -23,6 +23,8 @@ type NatureCardProps = {
 };
 
 export default function NatureCard({ items }: NatureCardProps) {
+  const publicURL = process.env.NEXT_PUBLIC_SUPABASE_STORAGE;
+
   return (
     <Carousel className="w-full relative">
       <CarouselContent className="flex space-x-4">
@@ -30,13 +32,11 @@ export default function NatureCard({ items }: NatureCardProps) {
           <CarouselItem key={item.id} className="flex-none w-96">
             <div className="relative p-4 border rounded-md shadow-sm bg-card">
               <div className="aspect-video border relative mb-2 rounded">
-                <Image
-                  src={`/${item.natureImg}.svg`}
-                  layout="fill"
-                  objectFit="cover"
-                  className="rounded"
-                  alt='nature image'
-                  />
+                <img
+                  src={`${item.natureImg}`}
+                  className="rounded object-cover "
+                  alt="nature image"
+                />
               </div>
               <h2 className="text-lg font-semibold">{item.title}</h2>
               <ArrowUpRight className="inline" size={20} />
