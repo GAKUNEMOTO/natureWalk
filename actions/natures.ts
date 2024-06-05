@@ -2,6 +2,7 @@
 import { currentUser } from "@/data/auth";
 import { createClient } from "@/lib/supabase/server";
 import { TablesInsert, Tables } from "@/types/database";
+import { NatureItem } from "@/types/nature";
 
 export const createItem = async (formData: TablesInsert<'natures'>): Promise<Tables<'natures'>> => {
   const supabase = createClient();
@@ -25,6 +26,21 @@ export const createItem = async (formData: TablesInsert<'natures'>): Promise<Tab
   }
 
   return data;
+};
+
+export const getNatureItem = async (id: string): Promise<NatureItem | null> => {
+  const supabase = createClient();
+  const { data: item, error } = await supabase
+    .from('natures')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error || !item) {
+    return null;
+  }
+
+  return item;
 };
 
 export const deleteItem = async (id: number) => {

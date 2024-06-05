@@ -1,20 +1,8 @@
 import React from 'react';
-import { kenTags } from '@/data/tag';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { kenTags } from "@/data/tag";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-type KenSelecterProps = {
-  onSelect: (value: string) => void;
-};
-
-const KenSelecter: React.FC<KenSelecterProps> = ({ onSelect }) => {
+const KenSelecter = ({ onSelect }: { onSelect: (value: string) => void }) => {
   return (
     <Select onValueChange={onSelect}>
       <SelectTrigger className="w-[180px]">

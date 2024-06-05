@@ -1,7 +1,7 @@
 'use client';
 
-import { ArrowUpRight } from 'lucide-react';
 import React from 'react';
+import Link from 'next/link';
 import {
   Carousel,
   CarouselContent,
@@ -9,55 +9,38 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
-import Link from 'next/link';
-import { TagId } from '@/types/tag';
 import { getTagLabel } from '@/lib/tag';
-
-type NatureItem = {
-  id: number;
-  title: string;
-  description: string;
-  natureImg: string; 
-  tags: TagId[];
-};
-
-type NatureCardProps = {
-  items: NatureItem[];
-};
-
-
+import { NatureCardProps } from '@/types/nature';
 
 export default function NatureCard({ items }: NatureCardProps) {
-
   return (
     <Carousel className="w-full relative">
       <CarouselContent className="flex space-x-4">
         {items.map((item) => (
-          <CarouselItem key={item.id} className="flex-none w-96">
-            <div className="relative p-4 border rounded-md shadow-sm bg-card">
-              <div className='aspect-video overflow-hidden border relative mb-2 rounded'>
-                <img
-                  src={item.natureImg}
-                  className="w-full h-full rounded object-center object-cover"
-                  alt="nature image"
-                />
+          <Link key={item.id} href={`/nature/${item.id}`} passHref>
+            <CarouselItem className="flex-none w-96 cursor-pointer">
+              <div className="relative p-4 border rounded-md shadow-sm bg-card">
+                <div className='aspect-video overflow-hidden border relative mb-2 rounded'>
+                  <img
+                    src={item.natureImg}
+                    className="w-full h-full rounded object-center object-cover"
+                    alt="nature image"
+                  />
+                </div>
+                <h2 className="text-lg font-semibold">{item.title}</h2>
+                <div className="flex relative z-10 flex-wrap mt-2 gap-2">
+                  {item.tags && item.tags.map((tag, index) => (
+                    <div key={index} className='border whitespace-nowrap text-muted-foreground bg-muted rounded text-xs px-1 py-1.5'>
+                      {getTagLabel(tag)}
+                    </div>
+                  ))}
+                </div>
+                <div className="flex relative z-10 flex-wrap mt-2 gap-2">
+                  {item.description}
+                </div>
               </div>
-              <h2 className="text-lg font-semibold">{item.title}</h2>
-              <div className="flex relative z-10 flex-wrap mt-2 gap-2">
-                {item.tags && item.tags.length > 0 && item.tags.map((tag) => {
-                  const tagLabel = getTagLabel(tag);
-                  return (
-                    <Link key={tag} href={`/tags/${tag}`} passHref>
-                      {tagLabel?.label || ''}
-                    </Link>
-                  );
-                })}
-              </div>
-              <div className="flex relative z-10 flex-wrap mt-2 gap-2">
-                {item.description}
-              </div>
-            </div>
-          </CarouselItem>
+            </CarouselItem>
+          </Link>
         ))}
       </CarouselContent>
       <CarouselPrevious className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10" />

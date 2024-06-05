@@ -1,7 +1,6 @@
 'use server';
 import { createClient } from "@/lib/supabase/server";
 
-
 export const getNatures = async () => {
   const supabase = createClient();
   const { data, error } = await supabase.from('natures').select();
@@ -18,21 +17,21 @@ export const searchNature = async (keyword: string) => {
     const supabase = createClient();
 
     let query = supabase
-        .from('nature')
+        .from('natures')
         .select();
 
-        if(keyword.includes( ' and ')) {
+        if(keyword.includes(' and ')) {
             const keywords = keyword.split(' and ').map((word) => `%${word}%`);
             keywords.forEach((word) => {
                 query = query.ilike('title', word);
             });
-        } else if (keyword.includes( ' or ')) {
+        } else if (keyword.includes(' or ')) {
             const keywords = keyword.split(' or ').map((word) => `%${word}%`);
-            query = query.or(keywords.map((word) => `name.ilike.${word}`).join(','));
-        }  else {
-            query = query.ilike('name', `%${keyword}%`);
-          }
 
+            query = query.or(keywords.map((word) => `name.ilike.${word}`).join(','));
+        } else {
+            query = query.ilike('name', `%${keyword}%`);
+        }
 
     const { data, error } = await query;
 

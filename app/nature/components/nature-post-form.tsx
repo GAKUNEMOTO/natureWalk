@@ -11,18 +11,15 @@ import { useToast } from '@/components/ui/use-toast';
 import { useRouter } from 'next/navigation';
 import { createItem } from '@/actions/natures';
 import { useNatureContext } from '@/context/NatureContext';
-import Image from 'next/image';
 import { NatureFormData } from '@/types/nature';
-import { createClient } from '@/lib/supabase/client'; // Import your Supabase client
+import { createClient } from '@/lib/supabase/client';
 import KenSelecter from './ken-selecter';
-import NatureCard from '@/components/nature-card';
-
 
 const fileSchema = (typeof window !== "undefined" && typeof File !== "undefined") ? z.instanceof(File) : z.any();
 
 export const formSchema = z.object({
   title: z.string().min(1, "タイトルは必須です").max(15, "タイトルは最大15文字までです"),
-  description: z.string().min(1, "説明は必須です").max(100, "説明は最大100文字までです"),
+  description: z.string().min(1, "説明は必須です").max(50, "説明は最大50文字までです"),
   natureImg: fileSchema,
   tag: z.string().min(1, "タグは必須です"),
 });
@@ -38,7 +35,6 @@ export default function ItemForm() {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
-  const [isTagSelected, setIsTagSelected] = useState<boolean>(false);
 
   const form = useForm<NatureFormData>({
     resolver: zodResolver(formSchema),
@@ -46,13 +42,9 @@ export default function ItemForm() {
       title: '',
       description: '',
       natureImg: '',
-      tag: '',
+      tag: [] as (string | undefined)[],
     },
   });
-
-  useEffect(() => {
-    setIsTagSelected(!!selectedTag);
-  }, [selectedTag]);
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -65,7 +57,6 @@ export default function ItemForm() {
 
   const onSelectTag = (value: string) => {
     setSelectedTag(value);
-    form.setValue('tag', value);
   };
 
   const onSubmit: SubmitHandler<NatureFormData> = async (data) => {
@@ -97,13 +88,15 @@ export default function ItemForm() {
 
       console.log("File uploaded to:", urlData.publicUrl);
 
-     const newItem = await createItem({
+      const newItemData = {
         ...data,
         natureImg: urlData.publicUrl,
-        tag: selectedTag ? [selectedTag] : [],
-      });
+        tag: selectedTag || '',
+      };
 
-      addNatureItem(newItem);
+      const newItem = await createItem(newItemData);
+
+      addNatureItem({ ...newItem, tags: selectedTag ? [selectedTag] : [] });
       toast({
         title: 'シェアしました',
         description: "投稿一覧をご確認ください",
@@ -168,7 +161,6 @@ export default function ItemForm() {
           </FormDescription>
           <FormMessage />
         </FormItem>
-
         <FormField
           control={form.control}
           name="tag"
@@ -181,23 +173,11 @@ export default function ItemForm() {
           )}
         />
         <div className="flex gap-3">
-          <Button type="submit" disabled={!isTagSelected}>
+          <Button type="submit">
             {'投稿'}
           </Button>
         </div>
       </form>
-      {/* Pass the form data to NatureCard for display */}
-      <NatureCard
-        items={[
-          {
-            id: 1,
-            title: form.watch('title'),
-            description: form.watch('description'),
-            natureImg: preview || '',
-            tags: selectedTag ? [selectedTag] : [],
-          },
-        ]}
-      />
     </Form>
   );
 }

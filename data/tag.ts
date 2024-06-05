@@ -48,3 +48,9 @@ export const kenTags = [
     { id: 'okinawa', label: '沖縄' }
   ];
   
+export const seasonTags = [
+    { id: 'spring', label: '春' },
+    { id: 'summer', label: '夏' },
+    { id: 'autumn', label: '秋' },
+    { id: 'winter', label: '冬' }
+  ];
