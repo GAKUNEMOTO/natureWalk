@@ -1,12 +1,12 @@
 import React from 'react';
-import { kenTags } from "@/data/tag";
+import { kenTags, seasonTags } from "@/data/tag";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-const KenSelecter = ({ onSelect }: { onSelect: (value: string) => void }) => {
+const TagSelecter = ({ onSelect }: { onSelect: (value: string) => void }) => {
   return (
     <Select onValueChange={onSelect}>
       <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder="場所を選択" />
+        <SelectValue placeholder="タグを選択" />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
@@ -17,9 +17,17 @@ const KenSelecter = ({ onSelect }: { onSelect: (value: string) => void }) => {
             </SelectItem>
           ))}
         </SelectGroup>
+        <SelectGroup>
+          <SelectLabel>シーズンタグ</SelectLabel>
+          {seasonTags.map((tag) => (
+            <SelectItem key={tag.id} value={tag.id}>
+              {tag.label}
+            </SelectItem>
+          ))}
+        </SelectGroup>
       </SelectContent>
     </Select>
   );
 };
 
-export default KenSelecter;
+export default TagSelecter;

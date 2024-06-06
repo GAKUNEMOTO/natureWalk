@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import { TagId } from "./tag";
 
 export type NatureFormData = {
@@ -9,6 +10,7 @@ export type NatureFormData = {
   
 
   export type NatureItem = {
+    createdAt: string;
     id: number;
     title: string;
     description: string;

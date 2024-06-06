@@ -13,13 +13,13 @@ import { createItem } from '@/actions/natures';
 import { useNatureContext } from '@/context/NatureContext';
 import { NatureFormData } from '@/types/nature';
 import { createClient } from '@/lib/supabase/client';
-import KenSelecter from './ken-selecter';
+import TagSelecter from './ken-selecter';
 
 const fileSchema = (typeof window !== "undefined" && typeof File !== "undefined") ? z.instanceof(File) : z.any();
 
 export const formSchema = z.object({
   title: z.string().min(1, "タイトルは必須です").max(15, "タイトルは最大15文字までです"),
-  description: z.string().min(1, "説明は必須です").max(50, "説明は最大50文字までです"),
+  description: z.string().min(1, "説明は必須です").max(500, "説明は最大50文字までです"),
   natureImg: fileSchema,
   tag: z.string().min(1, "タグは必須です"),
 });
@@ -42,7 +42,7 @@ export default function ItemForm() {
       title: '',
       description: '',
       natureImg: '',
-      tag: [] as (string | undefined)[],
+      tag: [], 
     },
   });
 
@@ -167,7 +167,7 @@ export default function ItemForm() {
           render={() => (
             <FormItem>
               <FormLabel>タグ</FormLabel>
-              <KenSelecter onSelect={onSelectTag} />
+              <TagSelecter onSelect={onSelectTag} />
               <FormMessage />
             </FormItem>
           )}
