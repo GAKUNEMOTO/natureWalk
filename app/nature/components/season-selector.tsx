@@ -1,12 +1,12 @@
 import React from 'react';
-import { kenTags, seasonTags } from "@/data/tag";
+import { seasonTags } from "@/data/tag";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const SeasonSelecter = ({ onSelect }: { onSelect: (value: string) => void }) => {
   return (
     <Select onValueChange={onSelect}>
       <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder="タグを選択" />
+        <SelectValue placeholder="シーズンタグを選択" />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>

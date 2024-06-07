@@ -43,7 +43,7 @@ export const getNatureItem = async (id: string): Promise<NatureItem | null> => {
   return item;
 };
 
-export const deleteItem = async (id: number) => {
+export const deleteNatureItem = async (id: number) => {
   const supabase = createClient();
   const user = await currentUser();
 
