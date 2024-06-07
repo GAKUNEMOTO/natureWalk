@@ -15,20 +15,8 @@ import { NatureFormData } from '@/types/nature';
 import { createClient } from '@/lib/supabase/client';
 import KenSelecter from './ken-selecter';
 import SeasonSelecter from './season-selector';
+import { formSchema, sanitizeFileName } from '@/schema/schema';
 
-
-const fileSchema = (typeof window !== "undefined" && typeof File !== "undefined") ? z.instanceof(File) : z.any();
-
-export const formSchema = z.object({
-  title: z.string().min(1, "タイトルは必須です").max(15, "タイトルは最大15文字までです"),
-  description: z.string().min(1, "説明は必須です").max(50, "説明は最大50文字までです"),
-  natureImg: fileSchema,
-  tags: z.array(z.string()).min(1, "タグは必須です"), // 修正されたスキーマ
-});
-
-const sanitizeFileName = (fileName: string) => {
-  return fileName.replace(/[^a-z0-9.]/gi, '_').toLowerCase();
-};
 
 export default function ItemForm() {
   const router = useRouter();
@@ -73,7 +61,6 @@ export default function ItemForm() {
       if (!file) {
         throw new Error("ファイルが選択されていません");
       }
-
       const sanitizedFileName = sanitizeFileName(file.name);
       const filePath = `nature_img/${Date.now()}_${sanitizedFileName}`;
       const supabase = createClient();
@@ -177,7 +164,7 @@ export default function ItemForm() {
         
         <FormField
           control={form.control}
-            name="tag"
+          name="tag"
           render={() => (
             <>
               <FormItem>

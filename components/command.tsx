@@ -2,13 +2,9 @@
 
 import * as React from "react";
 import {
-  Calculator,
-  Calendar,
   CreditCard,
-  Leaf,
   Settings,
   Shrub,
-  Smile,
   User,
 } from "lucide-react";
 
@@ -60,7 +56,7 @@ export function Command({ items }: { items: NatureItem[] }): JSX.Element {
         <CommandList>
           <CommandEmpty>見つかりません...</CommandEmpty>
           <CommandGroup heading="Natures">
-          {items.map((item) => (
+            {items.map((item) => (
               <CommandItem
                 key={item.id}
                 className="relative flex items-center px-5 py-2"
@@ -74,17 +70,17 @@ export function Command({ items }: { items: NatureItem[] }): JSX.Element {
           </CommandGroup>
           <CommandSeparator />
           <CommandGroup heading="Settings">
-            <CommandItem>
+            <CommandItem className="px-5 py-2 hover:bg-gray-100">
               <User className="mr-2 h-4 w-4" />
               <span>Profile</span>
               <CommandShortcut>⌘P</CommandShortcut>
             </CommandItem>
-            <CommandItem>
+            <CommandItem className="px-5 py-2 hover:bg-gray-100">
               <CreditCard className="mr-2 h-4 w-4" />
               <span>Billing</span>
               <CommandShortcut>⌘B</CommandShortcut>
             </CommandItem>
-            <CommandItem>
+            <CommandItem className="px-5 py-2 hover:bg-gray-100">
               <Settings className="mr-2 h-4 w-4" />
               <span>Settings</span>
               <CommandShortcut>⌘S</CommandShortcut>
