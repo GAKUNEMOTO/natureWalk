@@ -1,5 +1,5 @@
 'use client';
-import { getNatureItem } from '@/actions/natures';
+import { getNatureItem, getNatureItemIds } from '@/actions/natures';
 import { createClient } from '@/lib/supabase/server';
 import { getTagLabel } from '@/lib/tag';
 
@@ -14,6 +14,11 @@ interface NatureDetailProps {
 
 function formatDate(date: string) {
   return new Date(date).toLocaleDateString();
+}
+
+export async function generateStaticParams() {
+  const ids = await getNatureItemIds(); // すべてのIDを取得
+  return ids.map((id) => ({ id }));
 }
 
 const NatureDetail = async ({ params }: NatureDetailProps) => {
