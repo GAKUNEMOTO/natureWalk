@@ -35,7 +35,7 @@ export default function SignInForm() {
           </Button>
         </div>
         <div className="text-center">
-          <p className="text-gray-600">Don't have an account? <Link href="/signup" className="text-blue-500 hover:underline">Log in</Link></p>
+          <p className="text-gray-600">Dont have an account? <Link href="/signup" className="text-blue-500 hover:underline">Log in</Link></p>
         </div>
       </form>
     </div>

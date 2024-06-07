@@ -4,6 +4,7 @@ import { TagId } from '@/types/tag';
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 type NatureItem = {
+  createdAt: string; 
   id: number;
   title: string;
   description: string;
