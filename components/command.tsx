@@ -5,7 +5,9 @@ import {
   Calculator,
   Calendar,
   CreditCard,
+  Leaf,
   Settings,
+  Shrub,
   Smile,
   User,
 } from "lucide-react";
@@ -58,10 +60,14 @@ export function Command({ items }: { items: NatureItem[] }): JSX.Element {
         <CommandList>
           <CommandEmpty>見つかりません...</CommandEmpty>
           <CommandGroup heading="Natures">
-            {items.map((item) => (
-              <CommandItem key={item.id} >
-                <Link href={`/nature/${item.id}`}>
-                <span>{item.title}</span>
+          {items.map((item) => (
+              <CommandItem
+                key={item.id}
+                className="relative flex items-center px-5 py-2"
+              >
+                <Shrub className="mr-5 h-4 w-4" />
+                <Link href={`/nature/${item.id}`} className="absolute inset-0 flex items-center">
+                  <span className="ml-9">{item.title}</span>
                 </Link>
               </CommandItem>
             ))}
