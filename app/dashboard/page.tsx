@@ -7,6 +7,7 @@ import { getNatures } from '@/data/nature';
 import { TagId } from '@/types/tag';
 
 type NatureItem = {
+  createdAt: string; 
   id: number;
   title: string;
   description: string;

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { z } from 'zod';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -13,15 +13,17 @@ import { createItem } from '@/actions/natures';
 import { useNatureContext } from '@/context/NatureContext';
 import { NatureFormData } from '@/types/nature';
 import { createClient } from '@/lib/supabase/client';
-import TagSelecter from './ken-selecter';
+import KenSelecter from './ken-selecter';
+import SeasonSelecter from './season-selector';
+
 
 const fileSchema = (typeof window !== "undefined" && typeof File !== "undefined") ? z.instanceof(File) : z.any();
 
 export const formSchema = z.object({
   title: z.string().min(1, "タイトルは必須です").max(15, "タイトルは最大15文字までです"),
-  description: z.string().min(1, "説明は必須です").max(500, "説明は最大50文字までです"),
+  description: z.string().min(1, "説明は必須です").max(50, "説明は最大50文字までです"),
   natureImg: fileSchema,
-  tag: z.string().min(1, "タグは必須です"),
+  tags: z.array(z.string()).min(1, "タグは必須です"), // 修正されたスキーマ
 });
 
 const sanitizeFileName = (fileName: string) => {
@@ -34,7 +36,8 @@ export default function ItemForm() {
   const { addNatureItem } = useNatureContext();
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
-  const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [selectedKenTag, setSelectedKenTag] = useState<string | null>(null);
+  const [selectedSeasonTag, setSelectedSeasonTag] = useState<string | null>(null);
 
   const form = useForm<NatureFormData>({
     resolver: zodResolver(formSchema),
@@ -55,8 +58,14 @@ export default function ItemForm() {
     }
   };
 
-  const onSelectTag = (value: string) => {
-    setSelectedTag(value);
+  const onSelectKenTag = (value: string) => {
+    setSelectedKenTag(value);
+    form.setValue('tag', [value, ...form.getValues('tag').filter((tag: string) => tag !== value)]);
+  };
+
+  const onSelectSeasonTag = (value: string) => {
+    setSelectedSeasonTag(value);
+    form.setValue('tag', [value, ...form.getValues('tag').filter(tag => tag !== value)]);
   };
 
   const onSubmit: SubmitHandler<NatureFormData> = async (data) => {
@@ -91,12 +100,15 @@ export default function ItemForm() {
       const newItemData = {
         ...data,
         natureImg: urlData.publicUrl,
-        tag: selectedTag || '',
+        tags: [selectedKenTag, selectedSeasonTag].filter(Boolean) as string[],
       };
 
       const newItem = await createItem(newItemData);
 
-      addNatureItem({ ...newItem, tags: selectedTag ? [selectedTag] : [] });
+      addNatureItem({
+        ...newItem,
+        tags: newItem.tags ?? [],
+      });
       toast({
         title: 'シェアしました',
         description: "投稿一覧をご確認ください",
@@ -104,7 +116,8 @@ export default function ItemForm() {
       form.reset();
       setFile(null);
       setPreview(null);
-      setSelectedTag(null);
+      setSelectedKenTag(null);
+      setSelectedSeasonTag(null);
       router.push('/dashboard'); 
     } catch (error) {
       toast({
@@ -161,15 +174,23 @@ export default function ItemForm() {
           </FormDescription>
           <FormMessage />
         </FormItem>
+        
         <FormField
           control={form.control}
-          name="tag"
+            name="tag"
           render={() => (
-            <FormItem>
-              <FormLabel>タグ</FormLabel>
-              <TagSelecter onSelect={onSelectTag} />
-              <FormMessage />
-            </FormItem>
+            <>
+              <FormItem>
+                <FormLabel>県タグ</FormLabel>
+                <KenSelecter onSelect={onSelectKenTag} />
+                <FormMessage />
+              </FormItem>
+              <FormItem>
+                <FormLabel>シーズンタグ</FormLabel>
+                <SeasonSelecter onSelect={onSelectSeasonTag} />
+                <FormMessage />
+              </FormItem>
+            </>
           )}
         />
         <div className="flex gap-3">
