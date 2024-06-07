@@ -6,7 +6,6 @@ import { AuthProvider } from "@/context/AuthContext";
 import { Suspense } from "react";
 import { NatureProvider } from "@/context/NatureContext";
 
-
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -24,12 +23,12 @@ export default function RootLayout({
       <body className={cn(inter.className, 'min-h-dvh')}>
         <AuthProvider>
           <NatureProvider>
-          <Suspense>
-            {children}
-          </Suspense>
+            <Suspense>
+              {children}
+            </Suspense>
           </NatureProvider>
-          </AuthProvider>
-        </body>
+        </AuthProvider>
+      </body>
     </html>
   );
 }

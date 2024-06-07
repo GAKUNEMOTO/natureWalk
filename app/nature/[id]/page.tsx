@@ -1,3 +1,4 @@
+'use client';
 import { getNatureItem } from '@/actions/natures';
 import { createClient } from '@/lib/supabase/server';
 import { getTagLabel } from '@/lib/tag';
