@@ -1,5 +1,5 @@
 
-import { getNatureItem, getNatureItemIds } from '@/actions/natures';
+import { getNatureItem} from '@/actions/natures';
 import { getTagLabel } from '@/lib/tag';
 
 import { NatureItem } from '@/types/nature';
@@ -13,11 +13,6 @@ interface NatureDetailProps {
 
 function formatDate(date: string) {
   return new Date(date).toLocaleDateString();
-}
-
-export async function generateStaticParams() {
-  const ids = await getNatureItemIds(); // すべてのIDを取得
-  return ids.map((id) => ({ id }));
 }
 
 const NatureDetail = async ({ params }: NatureDetailProps) => {

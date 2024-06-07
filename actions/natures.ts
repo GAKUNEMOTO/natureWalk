@@ -1,9 +1,9 @@
 'use server';
 import { currentUser } from "@/data/auth";
 import { createClient } from "@/lib/supabase/server";
+
 import { TablesInsert, Tables } from "@/types/database";
 import { NatureItem } from "@/types/nature";
-
 
 export const createItem = async (formData: TablesInsert<'natures'>): Promise<Tables<'natures'>> => {
   const supabase = createClient();
@@ -16,11 +16,9 @@ export const createItem = async (formData: TablesInsert<'natures'>): Promise<Tab
   const formDataWithUserId = {
     ...formData,
     user_id: user.id,
-  }
+  };
   
   const { data, error } = await supabase.from("natures").insert(formDataWithUserId).select().single();
-
-  
 
   if (error) {
     throw new Error(error.message);
@@ -58,16 +56,4 @@ export const deleteNatureItem = async (id: number) => {
     throw new Error(error.message);
   }
 };
-
-export async function getNatureItemIds() {
-  const supabase = createClient();
-  const { data, error } = await supabase.from('natures').select('id');
-
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  return data.map(item => item.id);
-}
-
 
