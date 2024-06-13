@@ -42,6 +42,7 @@ export const getNatureItem = async (id: string): Promise<NatureItem | null> => {
   return item;
 };
 
+
 export const deleteNatureItem = async (id: number) => {
   const supabase = createClient();
   const user = await currentUser();
@@ -57,7 +58,7 @@ export const deleteNatureItem = async (id: number) => {
   }
 };
 
-export async function getNatureIds() {
+export const getNatureIds = async () => {
   const supabase = createClient();
   const { data, error } = await supabase.from('natures').select('id');
 
@@ -65,6 +66,5 @@ export async function getNatureIds() {
     throw new Error(error.message);
   }
 
-  console.log('Data:', data);
   return data.map((item) => item.id);
-}
+};

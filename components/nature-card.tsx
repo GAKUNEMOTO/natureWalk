@@ -14,13 +14,13 @@ import { NatureCardProps } from '@/types/nature';
 
 export default function NatureCard({ items }: NatureCardProps) {
 
-  function truncateString(text: string, maxLenght: number) {
-    if(text.length > maxLenght) {
-      return text.slice(0, maxLenght) + '...';
-    };
-    return text;
-  }
-  
+    function truncateString(text: string, maxLength: number) {
+      if(text.length > maxLength) {
+        return text.slice(0, maxLength) + '...';
+      } else {
+        return text;
+      }
+    }
   return (
     <Carousel className="w-full relative">
       <CarouselContent className="flex space-x-4">

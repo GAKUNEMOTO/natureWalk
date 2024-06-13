@@ -2,6 +2,7 @@ import { getNatureItem } from '@/actions/natures';
 import { getTagLabel } from '@/lib/tag';
 import NatureDetailClient from './components/naturedetail';
 import { kenTags, seasonTags } from '@/data/tag';
+import Image from 'next/image';
 
 interface NatureDetailProps {
   params: {
@@ -20,7 +21,6 @@ const NatureDetail = async ({ params }: NatureDetailProps) => {
     return <div>アイテムが見つかりませんでした。</div>;
   }
 
-  // タグの形式が配列であると仮定し、タグのフィルタリングを行う
   const placeTags = item.tags.filter((tag: string) => kenTags.some(kenTag => kenTag.id === tag));
   const seasonTagsFiltered = item.tags.filter((tag: string) => seasonTags.some(seasonTag => seasonTag.id === tag));
 
@@ -35,7 +35,15 @@ const NatureDetail = async ({ params }: NatureDetailProps) => {
               <div className='text-muted-foreground mt-2'>{formatDate(item.createdAt)}</div>
             </div>
           </div>
-          <img src={item.natureImg} alt='' className='w-full h-96 object-contain rounded-sm mb-4' />
+          <div className='w-full h-96 relative mb-4'>
+            <Image
+              src={item.natureImg}
+              alt="nature image"
+              layout="fill"
+              objectFit="contain"
+              className="rounded-sm"
+            />
+          </div>
           <h3 className="font-bold text-2xl text-muted-foreground border-b-4">魅力</h3>
           <p className='p-3'>
             {item.description}
@@ -45,7 +53,7 @@ const NatureDetail = async ({ params }: NatureDetailProps) => {
           {placeTags.map((tag, index) => (
             <div key={index} className='bg-muted rounded text-xs px-1 py-1.5 mb-6'>
               <p className="text-xl">
-                {getTagLabel(tag)}県
+                {getTagLabel(tag)}
               </p>
             </div>
           ))}

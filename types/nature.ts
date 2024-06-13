@@ -10,6 +10,7 @@ export type NatureFormData = {
   
 
   export type NatureItem = {
+    map(arg0: (item: any) => { id: any; }): unknown;
     createdAt: string;
     id: number;
     title: string;
