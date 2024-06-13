@@ -57,3 +57,13 @@ export const deleteNatureItem = async (id: number) => {
   }
 };
 
+export async function getNatureIds() {
+  const supabase = createClient();
+  const { data, error } = await supabase.from('natures').select('id');
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data.map((item) => item.id);
+}
