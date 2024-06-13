@@ -1,24 +1,48 @@
-import { getNatureItem } from '@/actions/natures';
+'use client';
+
 import { getTagLabel } from '@/lib/tag';
 import NatureDetailClient from './components/naturedetail';
 import { kenTags, seasonTags } from '@/data/tag';
 import Image from 'next/image';
-
-interface NatureDetailProps {
-  params: {
-    id: string;
-  };
-}
+import { useSearchParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { NatureItem } from '@/types/nature';
+import { createClient } from '@/lib/supabase/client';
 
 function formatDate(date: string) {
   return new Date(date).toLocaleDateString();
 }
 
-const NatureDetail = async ({ params }: NatureDetailProps) => {
-  const item = await getNatureItem(params.id);
+const NatureDetail = () => {
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id');
+  const [item, setItem] = useState<NatureItem | null>(null);
+
+  useEffect(() => {
+    const fetchItem = async (id: string) => {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from('natures')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error || !data) {
+        console.error('Fetch error:', error);
+        setItem(null);
+      } else {
+        console.log('Fetched item:', data);
+        setItem(data as NatureItem);
+      }
+    };
+
+    if (id) {
+      fetchItem(id);
+    }
+  }, [id]);
 
   if (!item) {
-    return <div>アイテムが見つかりませんでした。</div>;
+    return <div>読み込み中...</div>;
   }
 
   const placeTags = item.tags.filter((tag: string) => kenTags.some(kenTag => kenTag.id === tag));
@@ -39,9 +63,8 @@ const NatureDetail = async ({ params }: NatureDetailProps) => {
             <Image
               src={item.natureImg}
               alt="nature image"
-              layout="fill"
-              objectFit="contain"
-              className="rounded-sm"
+              fill
+              className="rounded-sm object-contain"
             />
           </div>
           <h3 className="font-bold text-2xl text-muted-foreground border-b-4">魅力</h3>

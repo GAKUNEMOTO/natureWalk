@@ -15,13 +15,14 @@ import Image from 'next/image';
 
 export default function NatureCard({ items }: NatureCardProps) {
 
-    function truncateString(text: string, maxLength: number) {
-      if(text.length > maxLength) {
-        return text.slice(0, maxLength) + '...';
-      } else {
-        return text;
-      }
+  function truncateString(text: string, maxLength: number) {
+    if (text.length > maxLength) {
+      return text.slice(0, maxLength) + '...';
+    } else {
+      return text;
     }
+  }
+
   return (
     <Carousel className="w-full relative">
       <CarouselContent className="flex space-x-4">
@@ -30,13 +31,12 @@ export default function NatureCard({ items }: NatureCardProps) {
             <CarouselItem className="flex-none w-96 cursor-pointer">
               <div className="relative p-4 border rounded-md shadow-sm bg-card">
                 <div className='aspect-video overflow-hidden border relative mb-2 rounded'>
-                <Image
-                src={item.natureImg}
-                alt="nature image"
-                layout="fill"
-                objectFit="cover"
-                className="rounded-sm"
-              />
+                  <Image
+                    src={item.natureImg}
+                    alt="nature image"
+                    fill
+                    className="rounded-sm object-cover"
+                  />
                 </div>
                 <h2 className="text-lg font-semibold">{item.title}</h2>
                 <div className="flex relative z-10 flex-wrap mt-2 gap-2">

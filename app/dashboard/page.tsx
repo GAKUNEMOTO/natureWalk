@@ -18,12 +18,14 @@ type NatureItem = {
 export default function Page() {
   const [natureItems, setNatureItems] = useState<NatureItem[]>([]);
 
-
   useEffect(() => {
     async function fetchData() {
       const data = await getNatures();
       console.log(data); // デバッグ用
-      setNatureItems(data);
+      setNatureItems(data.map(item => ({
+        ...item,
+        tags: item.tags ?? [],
+      })));
     }
     fetchData();
   }, []);
@@ -44,7 +46,7 @@ export default function Page() {
           <Button variant="ghost">view more</Button>
         </div>
         <div className="flex justify-start px-6 py-4">
-          <NatureCard items={natureItems}   />
+          <NatureCard items={natureItems} />
         </div>
       </div>
 
@@ -54,7 +56,7 @@ export default function Page() {
           <Button variant="ghost">view more</Button>
         </div>
         <div className="flex justify-start px-6 py-4">
-          <NatureCard items={natureItems}  />
+          <NatureCard items={natureItems} />
         </div>
       </div>
 

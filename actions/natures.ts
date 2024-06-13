@@ -27,19 +27,19 @@ export const createItem = async (formData: TablesInsert<'natures'>): Promise<Tab
   return data;
 };
 
-export const getNatureItem = async (id: string): Promise<NatureItem | null> => {
+export const getNatures = async (): Promise<NatureItem[]> => {
   const supabase = createClient();
-  const { data: item, error } = await supabase
-    .from('natures')
-    .select('*')
-    .eq('id', id)
-    .single();
+  const { data, error } = await supabase.from('natures').select();
 
-  if (error || !item) {
-    return null;
+  if (error) {
+    console.error(error);
+    return [];
   }
 
-  return item;
+  return data.map((item) => ({
+    ...item,
+    tags: item.tags || [] 
+  })) as NatureItem[];
 };
 
 
