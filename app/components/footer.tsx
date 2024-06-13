@@ -1,15 +1,13 @@
 import { Button } from '@/components/ui/button'
+import { Leaf } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
 
 export default function Footer() {
   return (
     <div className='h-16 border-t sticky top-full px-6 flex items-center'>
-        <Button variant='ghost'>
-            <Link href='/'>
-                LOGO
-            </Link>
-        </Button>
+            <Leaf size={40} />
+            <h2 className="ml-3">NatureHub</h2>
         <span className='flex-1'></span>
         <p className="text-muted-foreground">© 2024 GAKU NEMOTO</p>
     </div>

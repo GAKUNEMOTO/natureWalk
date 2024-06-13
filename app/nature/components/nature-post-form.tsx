@@ -97,9 +97,6 @@ export default function ItemForm() {
       addNatureItem({
         ...newItem,
         tags: newItem.tags ?? [],
-        map: function (arg0: (item: any) => { id: any; }): unknown {
-          throw new Error('Function not implemented.');
-        }
       });
       toast({
         title: 'シェアしました',
