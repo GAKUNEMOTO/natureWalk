@@ -13,6 +13,14 @@ import { getTagLabel } from '@/lib/tag';
 import { NatureCardProps } from '@/types/nature';
 
 export default function NatureCard({ items }: NatureCardProps) {
+
+  function truncateString(text: string, maxLenght: number) {
+    if(text.length > maxLenght) {
+      return text.slice(0, maxLenght) + '...';
+    };
+    return text;
+  }
+  
   return (
     <Carousel className="w-full relative">
       <CarouselContent className="flex space-x-4">
@@ -36,7 +44,7 @@ export default function NatureCard({ items }: NatureCardProps) {
                   ))}
                 </div>
                 <div className="flex relative z-10 flex-wrap mt-2 gap-2">
-                  {item.description}
+                  {truncateString(item.description, 50)}
                 </div>
               </div>
             </CarouselItem>

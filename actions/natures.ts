@@ -1,7 +1,7 @@
 'use server';
-import { currentUser } from "@/data/auth";
-import { createClient } from "@/lib/supabase/server";
 
+import { createClient } from "@/lib/supabase/server";
+import { currentUser } from "@/data/auth";
 import { TablesInsert, Tables } from "@/types/database";
 import { NatureItem } from "@/types/nature";
 
@@ -17,7 +17,7 @@ export const createItem = async (formData: TablesInsert<'natures'>): Promise<Tab
     ...formData,
     user_id: user.id,
   };
-  
+
   const { data, error } = await supabase.from("natures").insert(formDataWithUserId).select().single();
 
   if (error) {
@@ -65,5 +65,6 @@ export async function getNatureIds() {
     throw new Error(error.message);
   }
 
+  console.log('Data:', data);
   return data.map((item) => item.id);
 }

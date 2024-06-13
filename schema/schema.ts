@@ -4,7 +4,7 @@ export const fileSchema = (typeof window !== "undefined" && typeof File !== "und
 
 export const formSchema = z.object({
   title: z.string().min(1, "タイトルは必須です").max(15, "タイトルは最大15文字までです"),
-  description: z.string().min(1, "説明は必須です").max(50, "説明は最大50文字までです"),
+  description: z.string().min(1, "説明は必須です").max(200, "説明は最大200文字までです"),
   natureImg: fileSchema,
   tags: z.array(z.string()).min(1, "タグは必須です"),
 });
