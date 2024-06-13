@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/carousel';
 import { getTagLabel } from '@/lib/tag';
 import { NatureCardProps } from '@/types/nature';
+import Image from 'next/image';
 
 export default function NatureCard({ items }: NatureCardProps) {
 
@@ -29,11 +30,13 @@ export default function NatureCard({ items }: NatureCardProps) {
             <CarouselItem className="flex-none w-96 cursor-pointer">
               <div className="relative p-4 border rounded-md shadow-sm bg-card">
                 <div className='aspect-video overflow-hidden border relative mb-2 rounded'>
-                  <img
-                    src={item.natureImg}
-                    className="w-full h-full rounded object-center object-cover"
-                    alt="nature image"
-                  />
+                <Image
+                src={item.natureImg}
+                alt="nature image"
+                layout="fill"
+                objectFit="cover"
+                className="rounded-sm"
+              />
                 </div>
                 <h2 className="text-lg font-semibold">{item.title}</h2>
                 <div className="flex relative z-10 flex-wrap mt-2 gap-2">
