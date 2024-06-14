@@ -8,6 +8,7 @@ import { useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { NatureItem } from '@/types/nature';
 import { createClient } from '@/lib/supabase/client';
+import { getNatureIds } from '@/actions/natures';
 
 function formatDate(date: string) {
   return new Date(date).toLocaleDateString();
@@ -44,6 +45,12 @@ const NatureDetail = () => {
   if (!item) {
     return <div>読み込み中...</div>;
   }
+
+
+async function generateStaticParams() {
+  const ids = await getNatureIds();
+  return ids.map((id) => ({ id: id.toString() }));
+}
 
   const placeTags = item.tags.filter((tag: string) => kenTags.some(kenTag => kenTag.id === tag));
   const seasonTagsFiltered = item.tags.filter((tag: string) => seasonTags.some(seasonTag => seasonTag.id === tag));
