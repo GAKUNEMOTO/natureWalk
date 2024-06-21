@@ -24,6 +24,8 @@ const NatureDetailClient: React.FC<NatureDetailClientProps> = ({ item }) => {
     }
   };
 
+  console.log(item);
+
   return (
     <div className='flex'>
       <Button variant='outline'>
