@@ -1,5 +1,4 @@
-
-
+'use client'
 import { useEffect, useState } from 'react';
 import { NatureItem } from '@/types/nature';
 import { useRouter } from 'next/navigation';
