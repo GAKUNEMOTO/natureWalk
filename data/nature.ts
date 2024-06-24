@@ -1,6 +1,5 @@
 'use server';
 import { createClient } from "@/lib/supabase/server";
-import { GetStaticPaths, GetStaticProps } from "next";
 
 export const getNatures = async () => {
   const supabase = createClient();

@@ -3,8 +3,6 @@ import { notFound } from "next/navigation";
 import Image from 'next/image';
 import { NatureItem } from "@/types/nature";
 
-
-
 export type TagId = {
   id: number;
   name: string;
