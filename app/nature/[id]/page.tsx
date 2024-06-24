@@ -27,6 +27,11 @@ export const revalidate = 0;
 export async function generateStaticParams() {
   const { data: natures } = await supabase.from("natures").select("id");
 
+  if(!natures) {
+    return [];
+  }
+
+
   return natures?.map(({ id }) => ({
     id: id.toString(),  // idを文字列に変換
   }));
