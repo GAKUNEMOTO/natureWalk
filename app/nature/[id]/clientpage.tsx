@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { NatureItem } from '@/types/nature';
 import { useRouter } from 'next/navigation';
-import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
 import { createClient } from '@/lib/supabase/client';
 
 type Props = {
@@ -20,13 +19,24 @@ const ClientPage = ({ params }: Props) => {
 
   useEffect(() => {
     const fetchNatureItem = async () => {
-      const { data } = await supabase
-        .from('natures')
-        .select('*')
-        .eq('id', params.id)
-        .single();
+      const { data, error } = await supabase
+      .from('natures')
+      .select('*')
+      .eq('id', params.id)
+      .maybeSingle();
 
-      setNatureItem(data);
+    if (error) {
+      console.error('Error fetching data:', error);
+      return;
+}
+
+if(data) {
+  setNatureItem(data);
+  console.log('Query result:', data);
+} else {}
+console.log('No data here');
+
+setNatureItem(data);
     };
 
     fetchNatureItem();
@@ -47,11 +57,15 @@ const ClientPage = ({ params }: Props) => {
 export default ClientPage;
 
 export async function generateStaticParams() {
-  const { data: nature } = await supabase.from('natures').select('id');
+  const supabase = createClient();
+  const { data: nature, error } = await supabase.from('natures').select('id');
 
-  const paths = nature?.map(({ id }) => ({
-    params: { id: id.toString() },
-  }));
+  if (error) {
+    console.error('Error fetching static params:', error);
+    return [];
+  }
 
-  return paths;
+  return nature?.map(({ id }) => ({
+    id: id.toString(),
+  })) || [];
 }

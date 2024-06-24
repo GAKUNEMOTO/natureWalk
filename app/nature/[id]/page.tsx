@@ -1,11 +1,14 @@
 'use client';
 
-import ClientPage from "./clientpage";
-
+import { useParams } from 'next/navigation';
+import ClientPage from './clientpage';
 
 
 const Page = () => {
-  return <ClientPage params={{ id: '1' }} />;
+  const params = useParams();
+  const id = params.id as string;
+
+  return <ClientPage params={{ id }} />;
 };
 
 export default Page;
