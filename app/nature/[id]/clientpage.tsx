@@ -1,4 +1,4 @@
-'use client';
+
 
 import { useEffect, useState } from 'react';
 import { NatureItem } from '@/types/nature';
@@ -56,3 +56,16 @@ setNatureItem(data);
 
 export default ClientPage;
 
+export async function generateStaticParams() {
+  const supabase = createClient();
+  const { data: nature, error } = await supabase.from('natures').select('id');
+
+  if (error) {
+    console.error('Error fetching static params:', error);
+    return [];
+  }
+
+  return nature?.map(({ id }) => ({
+    id: id.toString(),
+  })) || [];
+}
