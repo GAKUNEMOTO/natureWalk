@@ -25,16 +25,21 @@ const supabase = createClient();
 export const revalidate = 0;
 
 export async function generateStaticParams() {
-  const { data: natures } = await supabase.from("natures").select("id");
+  try {
+    const { data: natures, error } = await supabase.from("natures").select("id");
 
-  if(!natures) {
+    if (error) {
+      console.error("Error fetching natures:", error.message);
+      return [];
+    }
+
+    return natures.map(({ id }) => ({
+      id: id.toString(),  // idを文字列に変換
+    }));
+  } catch (error) {
+    console.error("Error in generateStaticParams:", error as Error);
     return [];
   }
-
-
-  return natures?.map(({ id }) => ({
-    id: id.toString(),  // idを文字列に変換
-  }));
 }
 
 export default async function NaturePost({
