@@ -34,7 +34,6 @@ export default function Page() {
     <div className="relative p-12">
       <div className="flex items-center">
         <h1 className="text-2xl font-bold">おすすめ</h1>
-        <Button variant="ghost">view more</Button>
       </div>
       <div className="flex justify-start px-6 py-4">
         <NatureCard items={natureItems} />
@@ -43,7 +42,6 @@ export default function Page() {
       <div className="relative p-12">
         <div className="flex items-center">
           <h1 className="text-2xl font-bold">季節限定</h1>
-          <Button variant="ghost">view more</Button>
         </div>
         <div className="flex justify-start px-6 py-4">
           <NatureCard items={natureItems} />
@@ -53,7 +51,6 @@ export default function Page() {
       <div className="relative p-12">
         <div className="flex items-center">
           <h1 className="text-2xl font-bold">関東</h1>
-          <Button variant="ghost">view more</Button>
         </div>
         <div className="flex justify-start px-6 py-4">
           <NatureCard items={natureItems} />
@@ -63,7 +60,6 @@ export default function Page() {
       <div className="relative p-12">
         <div className="flex items-center">
           <h1 className="text-2xl font-bold">東北</h1>
-          <Button variant="ghost">view more</Button>
         </div>
         <div className="flex justify-start px-6 py-4">
           <NatureCard items={natureItems} />

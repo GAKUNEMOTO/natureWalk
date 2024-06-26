@@ -12,3 +12,25 @@ export const formSchema = z.object({
 export const sanitizeFileName = (fileName: string) => {
   return fileName.replace(/[^a-z0-9.]/gi, '_').toLowerCase();
 };
+
+
+export const signinSchema = z.object({
+  email: z.string().email({
+    message: "有効なメールアドレスを入力ください",
+  }),
+  password: z 
+    .string()
+    .min(8, {
+      message: "パスワードは少なくとも8文字以上である必要があります。",
+    })
+    .max(100)
+    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/, {
+      message:
+      "パスワードは少なくとも8文字以上で、1つの大文字、1つの小文字、1つの数字、および1つの特殊文字を含まなければなりません。",
+  }),
+})
+
+export const loginSchema = z.object({
+  email: z.string().email({ message: "有効なメールアドレスではありません" }),
+  password: z.string().min(1, { message: "有効なパスワードではありません" }),
+});
