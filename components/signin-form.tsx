@@ -12,9 +12,6 @@ import { Eye, EyeOff } from "lucide-react";
 import { Form } from "./ui/form";
 import { signinSchema } from "@/schema/schema";
 
-// スキーマの定義
-
-
 export default function SignUpForm() {
   const form = useForm<z.infer<typeof　signinSchema>>({
     resolver: zodResolver(signinSchema),
@@ -38,61 +35,64 @@ export default function SignUpForm() {
 
       await handleSubmitSignup(formData);
     } catch (error) {
-      form.setError('email', { type: 'manual', message: 'An error occurred during signup' });
-      form.setError('password', { type: 'manual', message: 'An error occurred during signup' });
+      form.setError('email', { type: 'manual', message: '登録中にエラーが発生しました' });
+      form.setError('password', { type: 'manual', message: '登録中にエラーが発生しました' });
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-          <h2 className="text-2xl font-bold mb-6 text-center">Welcome to Nature</h2>
-          <div className="mb-4">
-            <Label htmlFor="email" className="block text-gray-700">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              required
-              className="w-full px-3 py-2 border rounded-md"
-              {...form.register('email')}
-            />
-            {form.formState.errors.email && (
-              <p className="text-red-500 text-sm">{form.formState.errors.email.message}</p>
-            )}
-          </div>
-          <div className="mb-6 relative">
-            <Label htmlFor="password" className="block text-gray-700">Password</Label>
-            <div className="relative">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-sky-300 via-green-200 to-yellow-200">
+      <div className="relative w-full max-w-md">
+        <div className="absolute inset-0 bg-white/30 backdrop-blur-md rounded-3xl shadow-xl transform rotate-6 z-0"></div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="relative bg-white/70 backdrop-blur-sm p-8 rounded-3xl shadow-2xl z-10">
+            <h2 className="text-4xl font-popone text-emerald-800 mb-6 text-center ghibli-title">自然の仲間入り</h2>
+            <div className="mb-4">
+              <Label htmlFor="email" className="block text-emerald-700 font-popone">メールアドレス</Label>
               <Input
-                id="password"
-                type={showPassword ? "text" : "password"}
+                id="email"
+                type="email"
                 required
-                className="w-full px-3 py-2 border rounded-md"
-                {...form.register('password')}
+                className="w-full px-3 py-2 bg-white/80 border border-emerald-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500"
+                {...form.register('email')}
               />
-              <button
-                type="button"
-                onClick={togglePasswordVisibility}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
-              >
-                {showPassword ? <Eye /> : <EyeOff />}
-              </button>
+              {form.formState.errors.email && (
+                <p className="text-red-500 text-sm">{form.formState.errors.email.message}</p>
+              )}
             </div>
-            {form.formState.errors.password && (
-              <p className="text-red-500 text-sm">{form.formState.errors.password.message}</p>
-            )}
-          </div>
-          <div className="flex items-center justify-between mb-4">
-            <Button className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-              Sign Up
-            </Button>
-          </div>
-          <div className="text-center">
-            <p className="text-gray-600">Already have an account? <Link href="/login" className="text-blue-500 hover:underline">Log in</Link></p>
-          </div>
-        </form>
-      </Form>
+            <div className="mb-6 relative">
+              <Label htmlFor="password" className="block text-emerald-700 font-popone">パスワード</Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  className="w-full px-3 py-2 bg-white/80 border border-emerald-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500"
+                  {...form.register('password')}
+                />
+                <button
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 text-emerald-600"
+                >
+                  {showPassword ? <Eye /> : <EyeOff />}
+                </button>
+              </div>
+              {form.formState.errors.password && (
+                <p className="text-red-500 text-sm">{form.formState.errors.password.message}</p>
+              )}
+            </div>
+            <div className="flex items-center justify-between mb-4">
+              <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline transition duration-300 ease-in-out transform hover:scale-105">
+                冒険に参加する
+              </Button>
+            </div>
+            <div className="text-center">
+              <p className="text-emerald-600 font-popone">すでにアカウントをお持ちですか？ <Link href="/login" className="text-emerald-800 hover:underline">ログイン</Link></p>
+            </div>
+          </form>
+        </Form>
+      </div>
     </div>
   );
 }

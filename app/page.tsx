@@ -19,7 +19,7 @@ const Home: React.FC = () => {
         <Card className="w-full max-w-lg p-8 bg-white/70 backdrop-blur-sm shadow-xl rounded-3xl border-4 border-emerald-200">
           <CardDescription className="text-xl md:text-2xl tracking-wide text-emerald-700 font-popone">
             あなたは自然と触れ合っていますか？<br /> 
-            自然と触れ合うことは、自分のストレスレベルを軽減し、<br className="hidden md:inline" />
+            自然と触れ合うことは、心の安らぎや癒やし、<br className="hidden md:inline" />
             幸せな気持ちになることができます。<br />
             <span className="mt-4 inline-block font-bold text-2xl md:text-3xl text-emerald-600">
               さあ、探してみよう自分の癒やしの場所を。
