@@ -8,6 +8,9 @@ interface LeafProps {
 }
 
 const Leaf: React.FC<LeafProps> = ({ delay }) => {
+  const colors = ['#8fbc8f', '#90ee90', '#98fb98', '#3cb371', '#2e8b57'];
+  const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
   return (
     <motion.div
       style={{
@@ -16,7 +19,7 @@ const Leaf: React.FC<LeafProps> = ({ delay }) => {
         left: `${Math.random() * 100}%`,
         width: 20,
         height: 20,
-        backgroundColor: 'green',
+        backgroundColor: randomColor,
         borderRadius: '50% 0 50% 50%',
         transform: 'rotate(45deg)',
       }}
@@ -24,12 +27,13 @@ const Leaf: React.FC<LeafProps> = ({ delay }) => {
         y: ['0vh', '100vh'],
         x: ['-10px', '10px', '-10px'],
         rotate: [0, 360],
-        opacity: [1, 0.8, 0.6, 0.4, 0, 0],
+        opacity: [1, 1, 1, 0.8, 0.6, 0.4, 0],
       }}
       transition={{
-        duration: 5 + Math.random() * 2,
-        delay: delay,
+        duration: 8 + Math.random() * 4,
+        delay,
         repeat: Infinity,
+        repeatDelay: 1,
         ease: 'linear',
       }}
     />
