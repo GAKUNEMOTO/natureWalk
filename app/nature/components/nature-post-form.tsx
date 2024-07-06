@@ -120,20 +120,20 @@ export default function ItemForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 bg-green-800 bg-cover p-8 rounded-3xl shadow-lg font-ghibli">
         <FormField
           control={form.control}
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>タイトル</FormLabel>
+              <FormLabel className='text-green-800 text-xl mb-2'>タイトル</FormLabel>
               <FormControl>
-                <Input placeholder="タイトル" {...field} />
+                <Input placeholder="タイトル" {...field} className="border-2 border-ghibli-green rounded-lg p-2 bg-white bg-opacity-80" />
               </FormControl>
-              <FormDescription>
+              <FormDescription className="text-amber-700 italic">
                 最大15文字まで
               </FormDescription>
-              <FormMessage />
+              <FormMessage className="text-red-500" />
             </FormItem>
           )}
         />
@@ -142,45 +142,45 @@ export default function ItemForm() {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>説明</FormLabel>
+              <FormLabel className="text-green-800 text-xl mb-2">説明</FormLabel>
               <FormControl>
-                <Input placeholder="商品の説明を入力してください" {...field} />
+                <Input placeholder="商品の説明を入力してください" {...field} className="border-2 border-green-600 rounded-lg p-2 bg-white bg-opacity-80" />
               </FormControl>
-              <FormDescription>
+              <FormDescription className="text-amber-700 italic">
                 最大50文字まで
               </FormDescription>
-              <FormMessage />
+              <FormMessage className="text-red-500"/>
             </FormItem>
           )}
         />
         <FormItem>
-          <FormLabel>画像</FormLabel>
+          <FormLabel className="text-green-800 text-xl mb-2">画像</FormLabel>
           <FormControl>
-            <div {...getRootProps()} className="dropzone">
+            <div {...getRootProps()} className="border-3 border-dashed border-ghibli-green rounded-3xl p-8 text-center cursor-pointer bg-totoro bg-contain bg-no-repeat bg-center min-h-[200px] flex items-center justify-center hover:bg-ghibli-green hover:bg-opacity-10 transition-all duration-300">
               <input {...getInputProps()} />
               <p>ここにファイルをドラッグアンドドロップするか、クリックしてファイルを選択してください。</p>
-              {fileName && <p>選択されたファイル: {fileName}</p>}
+              {fileName && <p className="mt-4 font-bold">選択されたファイル: {fileName}</p>}
             </div>
           </FormControl>
-          <FormDescription>
+          <FormDescription className="text-amber-700 italic">
             画像をアップロードしてください
           </FormDescription>
-          <FormMessage />
+          <FormMessage className="text-red-500" />
         </FormItem>
         <FormItem>
-          <FormLabel>県タグ</FormLabel>
+          <FormLabel className="text-green-600 text-xl mb-2">県タグ</FormLabel>
           <FormControl>
-            <KenSelecter onSelect={onSelectKenTag} />
+            <KenSelecter onSelect={onSelectKenTag}  />
           </FormControl>
         </FormItem>
         <FormItem>
-          <FormLabel>シーズンタグ</FormLabel>
+          <FormLabel className='text-green-600 text-xl mb-2'>シーズンタグ</FormLabel>
           <FormControl>
             <SeasonSelecter onSelect={onSelectSeasonTag} />
           </FormControl>
         </FormItem>
         <div className="flex gap-3">
-          <Button type="submit">
+          <Button type="submit" className='bg-green-600 text-white border-none rounded-full px-8 py-2 text-xl cursor-pointer transition-all duration-300  hover:scale-100'>
             投稿
           </Button>
         </div>
