@@ -1,10 +1,11 @@
-import { createClient } from "@/lib/supabase/client"
+
 import { notFound } from "next/navigation";
 import Image from 'next/image';
 import { NatureItem } from "@/types/nature";
 import { kenTags, seasonTags } from "@/data/tag";
 import { getTagLabel } from "@/lib/tag";
 import NatureDetailClient from "./components/naturedetail";
+import { createClient } from "@/lib/supabase/client";
 
 export type TagId = {
   id: number;
@@ -15,7 +16,10 @@ function formatDate(date: string) {
   return new Date(date).toLocaleDateString();
 }
 
-const supabase = createClient();
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabase = createClient(supabaseUrl, supabaseKey);
+
 export const revalidate = 0;
 
 export async function generateStaticParams() {

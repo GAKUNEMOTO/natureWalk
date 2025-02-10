@@ -64,7 +64,9 @@ export default function ItemForm() {
 
       const sanitizedFileName = sanitizeFileName(file.name);
       const filePath = `nature_img/${Date.now()}_${sanitizedFileName}`;
-      const supabase = createClient();
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
+      const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string;
+      const supabase = createClient(supabaseUrl, supabaseAnonKey);
       console.log("Uploading file:", file);
       const { error: uploadError } = await supabase.storage
         .from('nature')

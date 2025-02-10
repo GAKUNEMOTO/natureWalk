@@ -6,10 +6,10 @@ import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/theme-provider";
 import Header from "../components/header";
 import Footer from "../components/footer";
-import { AuthProvider } from "@/context/AuthContext";
 import { Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { NatureProvider } from "@/context/NatureContext";
+import { ClerkProvider } from "@clerk/nextjs";
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -22,7 +22,7 @@ export default function DashboradLayout({
   return (
     <html lang="en">
       <body className={cn(inter.className, 'min-h-dvh')}>
-        <AuthProvider>
+        <ClerkProvider>
           <NatureProvider>
         <ThemeProvider
             attribute="class"
@@ -43,9 +43,8 @@ export default function DashboradLayout({
             <Toaster/>
           </Suspense>
         </ThemeProvider>
-
           </NatureProvider>
-            </AuthProvider>
+            </ClerkProvider>
         </body>
     </html>
   );
