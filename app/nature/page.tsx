@@ -11,7 +11,6 @@ export default function page() {
     redirect('/login');
   }
 
-  
   return (
     <div className='p-6'>
       <h1 className='font-bold text-3xl'>自然シェア</h1>

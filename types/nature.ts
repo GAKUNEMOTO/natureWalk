@@ -16,6 +16,9 @@ export type NatureFormData = {
     description: string;
     natureImg: string;
     tags: TagId[];
+    isRecommend?: boolean;
+    season?: 'spring' | 'summer' | 'autumn' | 'winter';
+    region?: "関東" | "東北" | "関西" | "北海道";
   };
 
   export type NatureCardProps = {

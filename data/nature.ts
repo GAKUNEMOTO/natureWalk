@@ -1,16 +1,32 @@
 'use server';
 import { createClient } from "@/lib/supabase/server";
+import { clear } from "console";
 
 export const getNatures = async () => {
   const supabase = createClient();
-  const { data, error } = await supabase.from('natures').select();
+  const controler = new AbortController();
+  const timeout = setTimeout(() => controler.abort(), 5000);
 
-  if (error) {
-    console.error(error);
+  try {
+    const { data, error } = await supabase
+    .from('natures')
+    .select()
+    .abortSignal(controler.signal);
+
+    clearTimeout(timeout);
+
+    if (error) {
+      console.error(error);
+      return [];
+    }
+  
+    return data;
+  } catch (error) {
+      console.error("Timeout or fetch error:", error);
     return [];
   }
 
-  return data;
+
 };
 
 export const getNature = async (id: string) => {

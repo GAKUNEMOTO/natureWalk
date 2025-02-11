@@ -71,7 +71,8 @@ export default async function NaturePost({
       title: nature.title,
       description: nature.description,
       natureImg: nature.natureImg,
-      tags: nature.tags
+      tags: nature.tags,
+      isRecommend: false
     };
 
     const placeTags = natureItem.tags.filter((tag: string) => kenTags.some(kenTag => kenTag.id === tag));

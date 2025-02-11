@@ -16,5 +16,5 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(404).json({ message: 'Item not found' });
   }
 
-  return res.status(200).json(data as NatureItem);
+  return res.status(200).json(data as unknown as NatureItem);
 }

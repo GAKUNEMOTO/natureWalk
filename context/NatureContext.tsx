@@ -1,16 +1,8 @@
 'use client';
-import { NatureContextType } from '@/types/nature';
+import { NatureContextType, NatureItem } from '@/types/nature';
 import { TagId } from '@/types/tag';
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
-type NatureItem = {
-  createdAt: string; 
-  id: number;
-  title: string;
-  description: string;
-  natureImg: string;
-  tags: TagId[];
-};
 
 
 const NatureContext = createContext<NatureContextType | undefined>(undefined);

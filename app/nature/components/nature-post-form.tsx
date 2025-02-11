@@ -99,6 +99,7 @@ export default function ItemForm() {
       addNatureItem({
         ...newItem,
         tags: newItem.tags ?? [],
+        isRecommend: false, 
       });
       toast({
         title: 'シェアしました',
