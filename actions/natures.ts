@@ -42,22 +42,6 @@ export const getNatures = async (): Promise<NatureItem[]> => {
   })) as NatureItem[];
 };
 
-
-export const deleteNatureItem = async (id: number) => {
-  const supabase = createClient();
-  const user = await currentUser();
-
-  if (!user) {
-    throw new Error('ログインしてください');
-  }
-
-  const { error } = await supabase.from("natures").delete().eq('id', id);
-
-  if (error) {
-    throw new Error(error.message);
-  }
-};
-
 export const getNatureIds = async () => {
   const supabase = createClient();
   const { data, error } = await supabase.from('natures').select('id');
