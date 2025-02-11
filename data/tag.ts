@@ -1,3 +1,5 @@
+
+// ここの設定を次回修正
 export const kenTags = [
   { id: 'hokkaido', label: '北海道', region: '北海道' },
   { id: 'aomori', label: '青森', region: '東北' },

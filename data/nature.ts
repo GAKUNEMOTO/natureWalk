@@ -1,6 +1,5 @@
 'use server';
 import { createClient } from "@/lib/supabase/server";
-import { clear } from "console";
 
 export const getNatures = async () => {
   const supabase = createClient();
