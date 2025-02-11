@@ -13,7 +13,10 @@ export default function Page() {
   const [seasonalItems, setSeasonalItems] = useState<NatureItem[]>([]);
   const [kantoItems, setKantoItems] = useState<NatureItem[]>([]);
   const [tohokuItems, setTohokuItems] = useState<NatureItem[]>([]);
+  const [chubuItems, setChubuItems] = useState<NatureItem[]>([]);
+  const [kinkiItems, setKinkiItems] = useState<NatureItem[]>([]);
   const [kyushuItems, setKyushuItems] = useState<NatureItem[]>([]);
+
 
   useEffect(() => {
     async function fetchData() {
@@ -32,8 +35,10 @@ export default function Page() {
 
       setRecommendedItems(filterRecommend(processedData));
       setSeasonalItems(filterSeason(processedData,getCurrentSeason()));
-      setKantoItems(filterRegion(processedData, "関東"));
       setTohokuItems(filterRegion(processedData, "東北"));
+      setKantoItems(filterRegion(processedData, "関東"));
+      setChubuItems(filterRegion(processedData, "中部"));
+      setKinkiItems(filterRegion(processedData, "近畿"));
       setKyushuItems(filterRegion(processedData, "九州"));
     }
     fetchData();
@@ -46,8 +51,10 @@ export default function Page() {
         
         <SectionWithLeaves title="おすすめの冒険" items={recommendedItems} />
         <SectionWithLeaves title="季節限定のさんぽ" items={seasonalItems} />
-        <SectionWithLeaves title="関東のさんぽ" items={kantoItems} />
         <SectionWithLeaves title="東北のさんぽ" items={tohokuItems} />
+        <SectionWithLeaves title="関東のさんぽ" items={kantoItems} />
+        <SectionWithLeaves title="中部のさんぽ" items={chubuItems} />
+        <SectionWithLeaves title="近畿のさんぽ" items={kinkiItems} />
         <SectionWithLeaves title="九州のさんぽ" items={kyushuItems} />
       </div>
     </div>
