@@ -20,9 +20,7 @@ export default function DashboradLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={cn(inter.className, 'min-h-dvh')}>
-        <AuthProvider>
+      <div className={cn(inter.className, 'min-h-dvh')}>
           <NatureProvider>
         <ThemeProvider
             attribute="class"
@@ -30,23 +28,12 @@ export default function DashboradLayout({
             enableSystem
             disableTransitionOnChange
             >
-              <Suspense>
                 <Header/>   
-              </Suspense>
-              <Suspense>
                 {children}
-              </Suspense>
-              <Suspense>
                 <Footer/>
-              </Suspense>
-              <Suspense>
             <Toaster/>
-          </Suspense>
         </ThemeProvider>
-
           </NatureProvider>
-            </AuthProvider>
-        </body>
-    </html>
+        </div>
   );
 }

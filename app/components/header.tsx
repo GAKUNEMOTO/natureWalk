@@ -55,7 +55,6 @@ const Header: React.FC = () => {
           <ToggleMode />
           
           {user ? (
-
             <Avatar>
               <Link href='/login'>
               <AvatarImage src={user.user_metadata?.avatar_url || "https://github.com/shadcn.png"} alt="User Avatar" />
