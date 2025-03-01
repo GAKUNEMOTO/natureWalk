@@ -1,24 +1,26 @@
-import { signOut } from '@/actions/auth';
+'use client';
 import { ToggleMode } from '@/components/toggleMode';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { Leaf, Pencil, LogOut } from 'lucide-react';
+import { Leaf, Pencil, } from 'lucide-react';
 import { Command } from '@/components/command';
-import { createClient } from '@/lib/supabase/client';
+import { createClient } from '@/utils/supabase/client';
 import { NatureItem } from '@/types/nature';
+import { Avatar, AvatarImage } from '@/components/ui/avatar';
 
 const Header: React.FC = () => {
   const { user } = useAuth();
+  console.log("User in Header:", user);
   const [natureItems, setNatureItems] = useState<NatureItem[]>([]);
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
     const fetchNatureItems = async () => {
-      const client = createClient();
-      const { data, error } = await client.from('natures').select('*');
+      const supabase = createClient();
+      const { data, error } = await supabase.from('natures').select('*');
       if (error) {
         console.error(error);
       } else {
@@ -29,8 +31,9 @@ const Header: React.FC = () => {
   }, []);
 
   if (!isClient) {
-    return null; 
+    return null;
   }
+  
   return (
     <header className="bg-gradient-to-r from-green-400 to-blue-500 p-4 shadow-lg">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -52,18 +55,14 @@ const Header: React.FC = () => {
           <ToggleMode />
           
           {user ? (
-            <form action={signOut}>
-              <Button variant="ghost" className="bg-white/20 hover:bg-white/30 text-white font-popone">
-                <LogOut size={20} className="mr-2" />
-                冒険を終える
-              </Button>
-            </form>
-          ) : (
-            <Button variant="ghost" className="bg-white/20 hover:bg-white/30 text-white font-popone">
+
+            <Avatar>
               <Link href='/login'>
-                冒険に参加
+              <AvatarImage src={user.user_metadata?.avatar_url || "https://github.com/shadcn.png"} alt="User Avatar" />
               </Link>
-            </Button>
+            </Avatar>
+          ) : (
+            <Link href='/login' className="text-white font-popone">ログイン</Link>
           )}
         </div>
       </div>

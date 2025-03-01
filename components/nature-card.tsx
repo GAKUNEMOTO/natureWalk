@@ -9,7 +9,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
-import { getTagLabel } from '@/lib/tag';
+import { getTagLabel } from '@/utils/tag';
 import { NatureCardProps } from '@/types/nature';
 import Image from 'next/image';
 

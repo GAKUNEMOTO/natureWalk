@@ -9,8 +9,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import { Form } from "./ui/form";
 import { signinSchema } from "@/schema/schema";
+import { Form } from "@/components/ui/form";
+import SignInWithGoogleButton from "../../login/components/SignInWithGoogleButton";
+import { signup } from "@/lib/auth-action";
 
 export default function SignUpForm() {
   const form = useForm<z.infer<typeof　signinSchema>>({
@@ -18,6 +20,8 @@ export default function SignUpForm() {
     defaultValues: {
       email: "",
       password: "",
+      first_name: "",
+      last_name: "",
     },
   });
 
@@ -32,11 +36,14 @@ export default function SignUpForm() {
       const formData = new FormData();
       formData.append('email', data.email);
       formData.append('password', data.password);
+      formData.append('full_name', data.first_name + " " + data.last_name);
 
-      await handleSubmitSignup(formData);
+      await signup(formData);
     } catch (error) {
-      form.setError('email', { type: 'manual', message: '登録中にエラーが発生しました' });
-      form.setError('password', { type: 'manual', message: '登録中にエラーが発生しました' });
+      form.setError('email', { type: 'manual', message: 'メールにエラーが発生しました' });
+      form.setError('password', { type: 'manual', message: 'パスワードにエラーが発生しました' });
+      form.setError('first_name',{ type: 'manual', message : '名前にエラーが発生しました' });
+      form.setError('last_name',{ type: 'manual', message : '名前にエラーが発生しました' });
     }
   };
 
@@ -48,6 +55,32 @@ export default function SignUpForm() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="relative bg-white/70 backdrop-blur-sm p-8 rounded-3xl shadow-2xl z-10">
             <h2 className="text-4xl font-popone text-emerald-800 mb-6 text-center ghibli-title">自然の仲間入り</h2>
             <div className="mb-4">
+              <Label htmlFor="full_name" className="block text-emerald-700 font-popone">名前</Label>
+              <Input
+                id="first_name"
+                type="text"
+                required
+                className="w-full px-3 py-2 bg-white/80 border border-emerald-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500"
+                {...form.register('first_name')}
+              />
+              {form.formState.errors.first_name && (
+                <p className="text-red-500 text-sm">{form.formState.errors.first_name.message}</p>
+              )}
+            </div>
+            <div className="mb-4">
+              <Label htmlFor="last_name" className="block text-emerald-700 font-popone">苗字</Label>
+              <Input
+                id="last_name"
+                type="text"
+                required
+                className="w-full px-3 py-2 bg-white/80 border border-emerald-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500"
+                {...form.register('last_name')}
+              />
+              {form.formState.errors.last_name && (
+                <p className="text-red-500 text-sm">{form.formState.errors.last_name.message}</p>
+              )}
+            </div>
+            <div  className="mb-4">
               <Label htmlFor="email" className="block text-emerald-700 font-popone">メールアドレス</Label>
               <Input
                 id="email"
@@ -82,6 +115,7 @@ export default function SignUpForm() {
                 <p className="text-red-500 text-sm">{form.formState.errors.password.message}</p>
               )}
             </div>
+            <SignInWithGoogleButton/>
             <div className="flex items-center justify-between mb-4">
               <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline transition duration-300 ease-in-out transform hover:scale-105">
                 冒険に参加する

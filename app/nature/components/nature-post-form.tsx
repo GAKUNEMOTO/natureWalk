@@ -9,7 +9,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { createClient } from '@/lib/supabase/client';
+import { createClient } from '@/utils/supabase/client';
 import { createItem } from '@/actions/natures';
 import { useNatureContext } from '@/context/NatureContext';
 import KenSelecter from './ken-selecter';

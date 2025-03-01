@@ -28,9 +28,17 @@ export const signinSchema = z.object({
       message:
       "パスワードは少なくとも8文字以上で、1つの大文字、1つの小文字、1つの数字、および1つの特殊文字を含まなければなりません。",
   }),
+  first_name: z.string().min(1, {
+    message: "有効な名前ではありません",
+  }),
+  last_name: z.string().min(1, {
+    message: "有効な名前ではありません",
+  }),
 })
+
 
 export const loginSchema = z.object({
   email: z.string().email({ message: "有効なメールアドレスではありません" }),
   password: z.string().min(1, { message: "有効なパスワードではありません" }),
+  full_name: z.string().min(1, { message: "有効な名前ではありません" }),
 });

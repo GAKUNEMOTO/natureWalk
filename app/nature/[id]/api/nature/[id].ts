@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { createClient } from '@/lib/supabase/server';
+import { createClient } from '@/utils/supabase/server';
 import { NatureItem } from '@/types/nature';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {

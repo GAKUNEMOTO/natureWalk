@@ -1,5 +1,5 @@
 'use server';
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/utils/supabase/server";
 
 // Upload file using standard upload
 export async function uploadFile(formData: FormData) {

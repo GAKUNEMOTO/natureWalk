@@ -1,5 +1,4 @@
 'use client';
-import { handleSubmitLogin } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,9 +7,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Form } from "./ui/form";
+import { Form } from "../../../../components/ui/form";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import SignInWithGoogleButton from "./SignInWithGoogleButton";
+import { login } from "@/lib/auth-action";
 
 export default function LoginForm() {
   const form = useForm<z.infer<typeof loginSchema>>({
@@ -18,21 +19,26 @@ export default function LoginForm() {
     defaultValues: {
       email: "",
       password: "",
+      full_name: "",
     }
   });
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const onSubmit = async (data: { email: string; password: string }) => {
+  const onSubmit = async (data: {
+    [x: string]: string | Blob; email: string; password: string 
+}) => {
     try {
       const formData = new FormData();
       formData.append('email', data.email);
       formData.append('password', data.password);
+      formData.append('full_name', data.full_name);
 
-      await handleSubmitLogin(formData);
+      await login(formData);
     } catch (error) {
       form.setError('email', { type: 'manual', message: '有効な認証ではありません' });
       form.setError('password', { type: 'manual', message: '有効な認証ではありません' });
+      form.setError('full_name',{ type: 'manual', message : 'その名前は登録されていません' });
     }
   };
   
@@ -71,6 +77,9 @@ export default function LoginForm() {
             >
               {showPassword ? <Eye /> : <EyeOff />}
             </button>
+          </div>
+          <div className="flex justify-between items-center mt-2">
+            <SignInWithGoogleButton/> 
           </div>
           {form.formState.errors.password && (
             <p className="text-red-500 text-sm">{form.formState.errors.password.message}</p>

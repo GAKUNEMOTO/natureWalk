@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createClient } from '@/utils/supabase/server';
 import { NatureItem } from '@/types/nature';
 import { NextApiRequest, NextApiResponse } from 'next';
 
