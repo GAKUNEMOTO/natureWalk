@@ -9,9 +9,9 @@ import { NatureDetailClient } from "./components/naturedetail";
 
 // params の型定義
 type Props = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
 function formatDate(date: string) {
@@ -40,7 +40,8 @@ export async function generateStaticParams() {
 }
 
 // メインコンポーネントを Props 型で型付け
-export default async function NaturePost({ params }: Props) {
+export default async function NaturePost(props: Props) {
+  const params = await props.params;
   const { id } = params;
 
   try {
