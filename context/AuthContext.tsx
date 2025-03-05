@@ -59,10 +59,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('Auth state changed:', event, session);
-        // SIGNED_IN 時にオプションでセッションを更新（必要な場合）
-        if (event === 'SIGNED_IN' && session) {
-          await supabase.auth.refreshSession();
-        }
+        
         setSession(session);
         setUser(session?.user || null);
       }
@@ -89,6 +86,62 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
     handleOAuthCallback();
   }, [supabase]);
+
+  useEffect(() => {
+    // セッション情報をローカルストレージに保存
+    if (session) {
+      localStorage.setItem('session', JSON.stringify(session));
+    }
+  }, [session]);
+  
+  // 初期セッション取得時に、ローカルストレージから読み込み
+  useEffect(() => {
+    const storedSessionStr = localStorage.getItem('session');
+    if (storedSessionStr) {
+      try {
+        const storedSession = JSON.parse(storedSessionStr);
+        setSession(storedSession);
+        setUser(storedSession?.user || null);
+      } catch (error) {
+        console.error('Error parsing stored session:', error);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleSessionRefresh = async () => {
+      if (session) {
+        const currentTime = Math.floor(Date.now() / 1000);
+        const expiresAt = session.expires_at;
+  
+        // セッション期限が近づいたら自動更新
+        if (expiresAt && currentTime >= expiresAt - 5 * 60) { // 5分前
+          try {
+            const { data, error } = await supabase.auth.refreshSession({
+              refresh_token: session.refresh_token
+            });
+  
+            if (data.session) {
+              setSession(data.session);
+              setUser(data.session.user);
+            } else if (error) {
+              console.error('Automatic session refresh failed:', error);
+              // 必要に応じてログアウト処理
+              setSession(null);
+              setUser(null);
+            }
+          } catch (error) {
+            console.error('Session refresh error:', error);
+          }
+        }
+      }
+    };
+  
+    // 定期的にセッションをチェック
+    const refreshInterval = setInterval(handleSessionRefresh, 5 * 60 * 1000); // 5分ごと
+  
+    return () => clearInterval(refreshInterval);
+  }, [session, supabase]);
 
   return (
     <AuthContext.Provider
