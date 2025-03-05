@@ -24,7 +24,7 @@ export type Database = {
           // ALTER TABLE で追加した "tags" カラム
           tags: string[] | null
         }
-        Insert: {
+        InsertTable: {
           id?: number
           createdAt?: string
           title: string

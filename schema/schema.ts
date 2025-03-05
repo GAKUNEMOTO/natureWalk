@@ -42,3 +42,12 @@ export const loginSchema = z.object({
   password: z.string().min(1, { message: "有効なパスワードではありません" }),
   full_name: z.string().min(1, { message: "有効な名前ではありません" }),
 });
+
+export const profileFormSchema = z.object({
+  firstName: z.string().min(1, "名前は必須です"),
+  lastName: z.string().min(1, "苗字は必須です。"),
+  bio: z.string().max(500, "500文字まで書けます。").optional(),
+  instagram: z.string().url("Invalid Instagram URL").optional(),
+  facebook: z.string().url("Invalid Facebook URL").optional(),
+  twitter: z.string().url("Invalid Twitter URL").optional(),
+});

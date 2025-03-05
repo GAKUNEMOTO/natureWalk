@@ -56,7 +56,7 @@ const Header: React.FC = () => {
           
           {user ? (
             <Avatar>
-              <Link href='/login'>
+              <Link href='/profile'>
               <AvatarImage src={user.user_metadata?.avatar_url || "https://github.com/shadcn.png"} alt="User Avatar" />
               </Link>
             </Avatar>
