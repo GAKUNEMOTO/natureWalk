@@ -4,12 +4,14 @@ import { deleteNatureItem } from '@/actions/natures';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Edit, Heart, Share2, Trash2 } from 'lucide-react';
 import Link from 'next/link';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NatureItem } from '@/types/nature';
 import { useRouter } from 'next/navigation';
 import { formatDistanceToNow } from "date-fns";
 import { ja } from "date-fns/locale";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { getLikeCount, toggleLike } from '@/actions/likes';
+import toast from 'react-hot-toast';
 
 interface NatureDetailClientProps {
   item: NatureItem;
@@ -20,24 +22,54 @@ export const NatureDetailClient: React.FC<NatureDetailClientProps> = ({ item }) 
   const [isLiked, setIsLiked] = useState(false)
   const [likeCount, setLikeCount] = useState(0)
 
+  useEffect(() => {
+    const fetchLikes = async () => {
+      try{
+        const likeInfo = await getLikeCount(item.id);
+        setIsLiked(likeInfo.isLiked)
+        setLikeCount(likeInfo.count)
+
+      }catch(error){
+        if (error instanceof Error) {
+          throw new Error('Failed to fetch likes:', { cause: error });
+        } else {
+          throw new Error('Failed to fetch likes');
+        }
+        
+      }
+    }
+    fetchLikes()
+  }, [item.id])
+
   const handleDelete = async () => {
     try {
       await deleteNatureItem(item.id).then(() => {
         router.push('/dashboard');
+        toast.success('投稿を削除しました');
       });
     } catch (error) {
       console.error('Failed to delete item:', error);
+      toast.error('削除に失敗しました');
     }
   };
 
   console.log(item);
 
-  const handleLike = () => {
-    setIsLiked(!isLiked)
-    setLikeCount((prev: number) => (isLiked ? prev - 1 : prev + 1))
-    // Here you would typically call an API to update the like status
-  }
-
+  const handleLike = async () => {
+    try {
+      const result = await toggleLike(item.id);
+      setIsLiked(result.liked);
+      
+      // Optimistically update like count
+      setLikeCount(prev => result.liked ? prev + 1 : prev - 1);
+      
+      // Show toast notification
+      toast.success(result.liked ? 'いいねしました' : 'いいねを取り消しました');
+    } catch (error) {
+      console.error('Failed to toggle like:', error);
+      toast.error('いいね処理に失敗しました');
+    }
+  };
   const formattedDate = item.createdAt
     ? formatDistanceToNow(new Date(item.createdAt), { addSuffix: true, locale: ja })
     : "日付不明"

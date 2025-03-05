@@ -4,63 +4,53 @@ import Image from 'next/image';
 import { NatureItem } from "@/types/nature";
 import { kenTags, seasonTags } from "@/data/tag";
 import { getTagLabel } from "@/utils/tag";
-
 import { CalendarDays, Leaf, MapPin } from "lucide-react";
 import { NatureDetailClient } from "./components/naturedetail";
 
-export type TagId = {
-  id: number;
-  name: string;
+// params の型定義
+type Props = {
+  params: {
+    id: string;
+  };
 };
 
 function formatDate(date: string) {
   return new Date(date).toLocaleDateString();
 }
 
-
-export const revalidate = 0;
 const supabase = createClient();
+export const dynamicParams = false;
 
+// generateStaticParams を async 関数として定義
 export async function generateStaticParams() {
   try {
     const { data: natures, error } = await supabase.from("natures").select("id");
 
-    if (error) {
-      console.error("Error fetching natures:", error.message);
+    if (error || !natures) {
       return [];
     }
 
-    if (!natures) {
-      return [];
-    }
-
-    return natures.map(({ id }) => ({
-      id: id.toString(),  // idを文字列に変換
+    return natures.map((nature) => ({
+      id: String(nature.id),
     }));
   } catch (error) {
-    console.error("Error in generateStaticParams:", error as Error);
+    console.error("Error in generateStaticParams:", error);
     return [];
   }
 }
 
-export default async function NaturePost({
-  params: { id }
-}: {
-  params: { id: string }
-}) {
+// メインコンポーネントを Props 型で型付け
+export default async function NaturePost({ params }: Props) {
+  const { id } = params;
+
   try {
     const { data: nature, error } = await supabase
       .from("natures")
       .select("*")
-      .eq("id", parseInt(id, 10))  // idを数値に変換してクエリを実行
+      .eq("id", parseInt(id))
       .single();
 
-    if (error) {
-      console.error("Error fetching nature:", error.message);
-      notFound();
-    }
-
-    if (!nature) {
+    if (error || !nature) {
       notFound();
     }
 
@@ -73,8 +63,12 @@ export default async function NaturePost({
       tags: nature.tags
     };
 
-    const placeTags = natureItem.tags.filter((tag: string) => kenTags.some(kenTag => kenTag.id === tag));
-    const seasonTagsFiltered = natureItem.tags.filter((tag: string) => seasonTags.some(seasonTag => seasonTag.id === tag));
+    const placeTags = natureItem.tags.filter((tag: string) => 
+      kenTags.some(kenTag => kenTag.id === tag)
+    );
+    const seasonTagsFiltered = natureItem.tags.filter((tag: string) => 
+      seasonTags.some(seasonTag => seasonTag.id === tag)
+    );
 
     return (
 <div className="container mx-auto px-4 py-8 max-w-5xl">
