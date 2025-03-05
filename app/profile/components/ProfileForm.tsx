@@ -5,10 +5,11 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { useAuth } from '@/context/AuthContext';
 import { ProfileView } from '@/types/profile';
 import { createClient } from '@/utils/supabase/client';
-import { Calendar, MapPin } from 'lucide-react';
+import { Calendar, LayoutDashboard, MapPin, UserCheck } from 'lucide-react';
 import { Badge } from "@/components/ui/badge"
 import React, { useEffect, useMemo, useState } from 'react';
 import { FaFacebook, FaInstagram, FaTwitter } from 'react-icons/fa';
+import Link from 'next/link';
 export default function ProfileForm(){
     const { user, isLoading } = useAuth();
     const [profile, setProfile] = useState<ProfileView | null>(null);
@@ -178,10 +179,22 @@ export default function ProfileForm(){
 
         {/* Action Buttons */}
         <div className="flex gap-2 pt-2">
-          <Button className="w-full">Edit Profile</Button>
-          <Button variant="outline" className="w-full">
-            Share Profile
+        <div className='flex items-center gap-2'>
+          <Button className="w-full">
+            <UserCheck className="w-6 h-6 text-muted-foreground mr-2 text-white" />
+            <Link href="/profile/edit">
+             プロフィールを編集
+            </Link>
           </Button>
+        </div>
+        <div className="flex items-center gap-2">
+        <Button variant="outline" className="w-full">
+        <LayoutDashboard className="w-6 h-6 text-muted-foreground mr-2" />
+            <Link href='/dashboard'>
+            ダッシュボードに戻る
+            </Link>
+          </Button>
+          </div>
         </div>
       </CardContent>
     </Card>
