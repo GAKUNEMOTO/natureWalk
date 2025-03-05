@@ -6,128 +6,165 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-export type Database = {
-  public: {
-    Tables: {
-      natures: {
-        Row: {
-          createdAt: string
-          description: string
-          id: number
-          natureImg: string
-          tags: string[] | null
-          title: string
-          user_id: string
+  export type Database = {
+    public: {
+      Tables: {
+        natures: {
+          Row: {
+            createdAt: string
+            description: string
+            id: number
+            natureImg: string
+            tags: string[] | null
+            title: string
+            user_id: string
+          }
+          Insert: {
+            createdAt?: string
+            description: string
+            id?: number
+            natureImg: string
+            tags?: string[] | null
+            title: string
+            user_id?: string
+          }
+          Update: {
+            createdAt?: string
+            description?: string
+            id?: number
+            natureImg?: string
+            tags?: string[] | null
+            title?: string
+            user_id?: string
+          }
+          Relationships: [
+            {
+              foreignKeyName: "natures_user_id_fkey"
+              columns: ["user_id"]
+              referencedRelation: "profiles"
+              referencedColumns: ["id"]
+            }
+          ]
+        },
+        
+        // Add the new likes table
+        likes: {
+          Row: {
+            id: string
+            user_id: string
+            nature_id: number
+            created_at: string
+          }
+          Insert: {
+            id?: string
+            user_id: string
+            nature_id: number
+            created_at?: string
+          }
+          Update: {
+            id?: string
+            user_id?: string
+            nature_id?: number
+            created_at?: string
+          }
+          Relationships: [
+            {
+              foreignKeyName: "likes_user_id_fkey"
+              columns: ["user_id"]
+              referencedRelation: "profiles"
+              referencedColumns: ["id"]
+            },
+            {
+              foreignKeyName: "likes_nature_id_fkey"
+              columns: ["nature_id"]
+              referencedRelation: "natures"
+              referencedColumns: ["id"]
+            }
+          ]
+        },
+  
+        // Existing profiles table
+        profiles: {
+          Row: {
+            id: string
+            full_name: string | null
+            email: string | null
+            avatar_url: string | null
+            bio: string | null
+            favorite_places: string[] | null
+            favorite_seasons: string[] | null
+            instagram_url: string | null
+            twitter_url: string | null
+            facebook_url: string | null
+            created_at: string
+            updated_at: string
+          }
+          Insert: {
+            id?: string
+            full_name?: string | null
+            email?: string | null
+            avatar_url?: string | null
+            bio?: string | null
+            favorite_places?: string[] | null
+            favorite_seasons?: string[] | null
+            instagram_url?: string | null
+            twitter_url?: string | null
+            facebook_url?: string | null
+            created_at?: string
+            updated_at?: string
+          }
+          Update: {
+            id?: string
+            full_name?: string | null
+            email?: string | null
+            avatar_url?: string | null
+            bio?: string | null
+            favorite_places?: string[] | null
+            favorite_seasons?: string[] | null
+            instagram_url?: string | null
+            twitter_url?: string | null
+            facebook_url?: string | null
+            created_at?: string
+            updated_at?: string
+          }
+          Relationships: []
+        },
+  
+        // Existing follows table
+        follows: {
+          Row: {
+            follower_id: string
+            followed_id: string
+            created_at: string | null
+          }
+          Insert: {
+            follower_id: string
+            followed_id: string
+            created_at?: string
+          }
+          Update: {
+            follower_id?: string
+            followed_id?: string
+            created_at?: string
+          }
+          Relationships: []
         }
-        Insert: {
-          createdAt?: string
-          description: string
-          id?: number
-          natureImg: string
-          tags?: string[] | null
-          title: string
-          user_id?: string
-        }
-        Update: {
-          createdAt?: string
-          description?: string
-          id?: number
-          natureImg?: string
-          tags?: string[] | null
-          title?: string
-          user_id?: string
-        }
-        Relationships: []
+      }, // Tables
+  
+      Views: {
+        [_ in never]: never
       },
-
-      // ======================
-      // 2. profiles テーブル
-      // ======================
-      profiles: {
-        Row: {
-          id: string
-          full_name: string | null
-          email: string | null
-          avatar_url: string | null
-          bio: string | null
-          favorite_places: string[] | null
-          favorite_seasons: string[] | null
-          instagram_url: string | null
-          twitter_url: string | null
-          facebook_url: string | null
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          // テーブル定義上、id は NOT NULL だが、Supabase でトリガー挿入などがあり得る場合は optional
-          id?: string
-          full_name?: string | null
-          email?: string | null
-          avatar_url?: string | null
-          bio?: string | null
-          favorite_places?: string[] | null
-          favorite_seasons?: string[] | null
-          instagram_url?: string | null
-          twitter_url?: string | null
-          facebook_url?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          full_name?: string | null
-          email?: string | null
-          avatar_url?: string | null
-          bio?: string | null
-          favorite_places?: string[] | null
-          favorite_seasons?: string[] | null
-          instagram_url?: string | null
-          twitter_url?: string | null
-          facebook_url?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Relationships: []
+      Functions: {
+        [_ in never]: never
       },
-
-      // ======================
-      // 3. follows テーブル
-      // ======================
-      follows: {
-        Row: {
-          follower_id: string
-          followed_id: string
-          created_at: string | null
-        }
-        Insert: {
-          follower_id: string
-          followed_id: string
-          created_at?: string
-        }
-        Update: {
-          follower_id?: string
-          followed_id?: string
-          created_at?: string
-        }
-        Relationships: []
+      Enums: {
+        [_ in never]: never
+      },
+      CompositeTypes: {
+        [_ in never]: never
       }
-
-    }, // Tables
-
-    Views: {
-      [_ in never]: never
-    },
-    Functions: {
-      [_ in never]: never
-    },
-    Enums: {
-      [_ in never]: never
-    },
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  } // public
-}
+    } // public
+  }
 
 type PublicSchema = Database[Extract<keyof Database, "public">]
 

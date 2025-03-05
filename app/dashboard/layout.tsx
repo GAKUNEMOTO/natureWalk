@@ -6,8 +6,6 @@ import { cn } from "@/utils/utils";
 import { ThemeProvider } from "@/components/theme-provider";
 import Header from "../components/header";
 import Footer from "../components/footer";
-import { AuthProvider } from "@/context/AuthContext";
-import { Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { NatureProvider } from "@/context/NatureContext";
 

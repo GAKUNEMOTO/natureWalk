@@ -16,6 +16,10 @@ export type NatureFormData = {
     description: string;
     natureImg: string;
     tags: TagId[];
+    likes?: {
+      count: number;  
+      isLiked?: boolean;  
+  };
   };
 
   export type NatureCardProps = {
