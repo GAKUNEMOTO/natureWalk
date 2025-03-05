@@ -14,6 +14,7 @@ const Header: React.FC = () => {
   const { user } = useAuth();
   console.log("User in Header:", user);
   const [natureItems, setNatureItems] = useState<NatureItem[]>([]);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -29,6 +30,21 @@ const Header: React.FC = () => {
     };
     fetchNatureItems();
   }, []);
+
+  useEffect(() => {
+    const fetchProfileAvatar = async () => {
+      const supabase = createClient();
+      const { data, error } = await supabase.from('profiles').select('avatar_url').eq('id', user?.id).single();
+      if (error) {
+        console.error(error);
+      } else if(data?.avatar_url) {
+        setAvatarUrl(data?.avatar_url);
+      }
+    }
+    if (user) {
+      fetchProfileAvatar();
+    }
+  }, [user]);
 
   if (!isClient) {
     return null;
@@ -57,7 +73,7 @@ const Header: React.FC = () => {
           {user ? (
             <Avatar>
               <Link href='/profile'>
-              <AvatarImage src={user.user_metadata?.avatar_url || "https://github.com/shadcn.png"} alt="User Avatar" />
+              <AvatarImage src={ avatarUrl || "https://github.com/shadcn.png"} alt="User Avatar" />
               </Link>
             </Avatar>
           ) : (
