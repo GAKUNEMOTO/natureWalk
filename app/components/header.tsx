@@ -9,6 +9,7 @@ import { Command } from '@/components/command';
 import { createClient } from '@/utils/supabase/client';
 import { NatureItem } from '@/types/nature';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
+import AvatarToggle from '@/components/AvatarToggle';
 
 const Header: React.FC = () => {
   const { user } = useAuth();
@@ -30,21 +31,6 @@ const Header: React.FC = () => {
     };
     fetchNatureItems();
   }, []);
-
-  useEffect(() => {
-    const fetchProfileAvatar = async () => {
-      const supabase = createClient();
-      const { data, error } = await supabase.from('profiles').select('avatar_url').eq('id', user?.id).single();
-      if (error) {
-        console.error(error);
-      } else if(data?.avatar_url) {
-        setAvatarUrl(data?.avatar_url);
-      }
-    }
-    if (user) {
-      fetchProfileAvatar();
-    }
-  }, [user]);
 
   if (!isClient) {
     return null;
@@ -71,11 +57,7 @@ const Header: React.FC = () => {
           <ToggleMode />
           
           {user ? (
-            <Avatar>
-              <Link href='/profile'>
-              <AvatarImage src={ avatarUrl || "https://github.com/shadcn.png"} alt="User Avatar" />
-              </Link>
-            </Avatar>
+            <AvatarToggle />
           ) : (
             <Link href='/login' className="text-white font-popone">ログイン</Link>
           )}
