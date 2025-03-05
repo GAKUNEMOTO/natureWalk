@@ -17,13 +17,6 @@ const nextConfig = {
       }
     ]
   },
-  theme: {
-    extend: {
-      fontFamily: {
-        popone: ["Mochiy Pop One", 'sans-serif'],
-      },
-    },
-  },
   webpack: (config, { dev, isServer }) => {
     if (dev && !isServer) {
       config.devtool = 'eval-source-map'

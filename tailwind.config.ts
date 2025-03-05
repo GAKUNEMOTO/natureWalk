@@ -1,6 +1,6 @@
 import type { Config } from "tailwindcss"
 
-const config = {
+const config: Config = {
   darkMode: ["class"],
   content: [
     './pages/**/*.{ts,tsx}',
@@ -19,7 +19,7 @@ const config = {
     },
     extend: {
       fontFamily: {
-        popone: ['Mochiy Pop One', 'sans-serif'],
+        popone: ["Mochiy Pop One", 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
