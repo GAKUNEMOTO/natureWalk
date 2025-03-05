@@ -11,8 +11,15 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { set, z } from "zod";
-import { X } from "lucide-react"; 
+import { Camera, X } from "lucide-react"; 
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Separator } from "@/components/ui/separator";
 
 // Zod スキーマから型を推論
 type ProfileValues = z.infer<typeof profileFormSchema>;
@@ -237,187 +244,163 @@ export default function ProfileEditor() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-md mx-auto p-4">
-      <h1 className="text-xl font-bold">Edit Profile</h1>
-
-      {/* アバター */}
-      <div className="flex items-center space-x-4">
-      {avatarUrl ? (
-            <Image
-                src={avatarUrl}
-                alt="Avatar"
-                width={80}
-                height={80}
-                className="rounded-full"
-                style={{ objectFit: 'cover' }}
-            />
-            ) : (
-            <div style={{ width: 80, height: 80, background: "#ccc", borderRadius: "50%" }} />
-            )}
-        <div>
-          <label htmlFor="avatar-upload" className="cursor-pointer text-blue-500">
-            Select Avatar
-          </label>
-          <input
-            id="avatar-upload"
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={avatarUploadHandler}
-          />
-        </div>
-      </div>
-
-      {/* firstName */}
-      <div>
-        <label className="block font-semibold mb-1">First Name</label>
-        <input
-          className="border border-gray-300 rounded p-2 w-full"
-          placeholder="John"
-          {...register("firstName")}
-        />
-        {errors.firstName && (
-          <p className="text-red-500 text-sm">{errors.firstName.message}</p>
-        )}
-      </div>
-
-      {/* lastName */}
-      <div>
-        <label className="block font-semibold mb-1">Last Name</label>
-        <input
-          className="border border-gray-300 rounded p-2 w-full"
-          placeholder="Doe"
-          {...register("lastName")}
-        />
-        {errors.lastName && (
-          <p className="text-red-500 text-sm">{errors.lastName.message}</p>
-        )}
-      </div>
-
-      {/* bio */}
-      <div>
-        <label className="block font-semibold mb-1">Bio</label>
-        <textarea
-          className="border border-gray-300 rounded p-2 w-full"
-          placeholder="Tell us about yourself"
-          {...register("bio")}
-        />
-        {errors.bio && (
-          <p className="text-red-500 text-sm">{errors.bio.message}</p>
-        )}
-      </div>
-
-      <div className="space-y-2">
-        <label htmlFor="places" className="block font-semibold mb-1">
-          好きな場所
-        </label>
-        <div className="space-y-2">
-          <Input
-            id="places"
-            value={placeInput}
-            onChange={(e) => setPlaceInput(e.target.value)}
-            onKeyDown={handleAddPlace}
-            placeholder="場所を入力してEnterを押してください"
-          />
-          <div className="flex flex-wrap gap-2">
-            {selectedPlaces.map((place) => (
-              <Badge 
-                key={place} 
-                variant="secondary"
-                className="flex items-center gap-1"
+<Card className="max-w-2xl mx-auto my-8 shadow-md">
+      <CardHeader className="space-y-1 border-b pb-6">
+        <h1 className="text-2xl font-bold tracking-tight">Edit Profile</h1>
+        <p className="text-sm text-muted-foreground">Update your personal information and preferences</p>
+      </CardHeader>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <CardContent className="space-y-6 pt-6">
+          {/* Avatar Section */}
+          <div className="flex flex-col items-center sm:flex-row sm:items-start gap-6">
+            <div className="relative group">
+              <Avatar className="h-24 w-24 border-2 border-primary/10">
+                <AvatarImage src={avatarUrl || ""} alt="Profile" />
+                <AvatarFallback className="bg-primary/10 text-lg">
+                  {/* Use initials if available */}
+                  JP
+                </AvatarFallback>
+              </Avatar>
+              <label
+                htmlFor="avatar-upload"
+                className="absolute bottom-0 right-0 bg-primary text-primary-foreground rounded-full p-1.5 cursor-pointer shadow-md hover:bg-primary/90 transition-colors"
               >
-                {place}
-                <X
-                  className="h-3 w-3 cursor-pointer"
-                  onClick={() => removePlace(place)}
+                <Camera className="h-4 w-4" />
+                <span className="sr-only">Upload avatar</span>
+              </label>
+              <input
+                id="avatar-upload"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={avatarUploadHandler}
+              />
+            </div>
+            <div className="space-y-4 flex-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="firstName">First Name</Label>
+                  <Input
+                    id="firstName"
+                    placeholder="John"
+                    {...register("firstName", { required: "First name is required" })}
+                  />
+                  {errors.firstName && <p className="text-destructive text-sm">{errors.firstName.message}</p>}
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="lastName">Last Name</Label>
+                  <Input
+                    id="lastName"
+                    placeholder="Doe"
+                    {...register("lastName", { required: "Last name is required" })}
+                  />
+                  {errors.lastName && <p className="text-destructive text-sm">{errors.lastName.message}</p>}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="bio">Bio</Label>
+                <Textarea
+                  id="bio"
+                  placeholder="Tell us about yourself"
+                  className="resize-none"
+                  rows={3}
+                  {...register("bio")}
                 />
-              </Badge>
-            ))}
+                {errors.bio && <p className="text-destructive text-sm">{errors.bio.message}</p>}
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
 
-      <div className="space-y-2">
-        <label htmlFor="seasons" className="block font-semibold mb-1">
-          好きな季節
-        </label>
-        <div className="space-y-2">
-          <Input
-            id="seasons"
-            value={seasonInput}
-            onChange={(e) => setSeasonInput(e.target.value)}
-            onKeyDown={handleAddSeason}
-            placeholder="季節を入力してEnterを押してください"
-          />
-          <div className="flex flex-wrap gap-2">
-            {selectedSeasons.map((season) => (
-              <Badge 
-                key={season} 
-                variant="secondary"
-                className="flex items-center gap-1"
-              >
-                {season}
-                <X
-                  className="h-3 w-3 cursor-pointer"
-                  onClick={() => removeSeason(season)}
-                />
-              </Badge>
-            ))}
+          <Separator />
+
+          {/* Preferences Section */}
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold">Preferences</h2>
+
+            <div className="space-y-3">
+              <Label htmlFor="places">Favorite Places</Label>
+              <Input
+                id="places"
+                value={placeInput}
+                onChange={(e) => setPlaceInput(e.target.value)}
+                onKeyDown={handleAddPlace}
+                placeholder="Type a place and press Enter"
+              />
+              {selectedPlaces.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {selectedPlaces.map((place) => (
+                    <Badge key={place} variant="secondary" className="flex items-center gap-1 px-3 py-1.5">
+                      {place}
+                      <X className="h-3 w-3 cursor-pointer ml-1" onClick={() => removePlace(place)} />
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-3">
+              <Label htmlFor="seasons">Favorite Seasons</Label>
+              <Input
+                id="seasons"
+                value={seasonInput}
+                onChange={(e) => setSeasonInput(e.target.value)}
+                onKeyDown={handleAddSeason}
+                placeholder="Type a season and press Enter"
+              />
+              {selectedSeasons.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {selectedSeasons.map((season) => (
+                    <Badge key={season} variant="secondary" className="flex items-center gap-1 px-3 py-1.5">
+                      {season}
+                      <X className="h-3 w-3 cursor-pointer ml-1" onClick={() => removeSeason(season)} />
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-        </div>
 
-      <div>
-        
-      </div>
+          <Separator />
 
-      {/* instagram */}
-      <div>
-        <label className="block font-semibold mb-1">Instagram</label>
-        <input
-          className="border border-gray-300 rounded p-2 w-full"
-          placeholder="https://instagram.com/yourname"
-          {...register("instagram")}
-        />
-        {errors.instagram && (
-          <p className="text-red-500 text-sm">{errors.instagram.message}</p>
-        )}
-      </div>
+          {/* Social Media Section */}
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold">Social Media</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <FaInstagram className="h-4 w-4 text-pink-500" />
+                  <Label htmlFor="instagram">Instagram</Label>
+                </div>
+                <Input id="instagram" placeholder="@username" {...register("instagram")} />
+              </div>
 
-      {/* facebook */}
-      <div>
-        <label className="block font-semibold mb-1">Facebook</label>
-        <input
-          className="border border-gray-300 rounded p-2 w-full"
-          placeholder="https://facebook.com/yourname"
-          {...register("facebook")}
-        />
-        {errors.facebook && (
-          <p className="text-red-500 text-sm">{errors.facebook.message}</p>
-        )}
-      </div>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <FaFacebook className="h-4 w-4 text-blue-600" />
+                  <Label htmlFor="facebook">Facebook</Label>
+                </div>
+                <Input id="facebook" placeholder="username" {...register("facebook")} />
+              </div>
 
-      {/* twitter */}
-      <div>
-        <label className="block font-semibold mb-1">Twitter</label>
-        <input
-          className="border border-gray-300 rounded p-2 w-full"
-          placeholder="https://twitter.com/yourname"
-          {...register("twitter")}
-        />
-        {errors.twitter && (
-          <p className="text-red-500 text-sm">{errors.twitter.message}</p>
-        )}
-      </div>
-
-      {/* ボタン */}
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="bg-blue-500 text-white px-4 py-2 rounded"
-      >
-        {isSubmitting ? "Saving..." : "Save Changes"}
-      </button>
-    </form>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <FaTwitter className="h-4 w-4 text-sky-500" />
+                  <Label htmlFor="twitter">Twitter</Label>
+                </div>
+                <Input id="twitter" placeholder="@username" {...register("twitter")} />
+              </div>
+            </div>
+          </div>
+        </CardContent>
+        <CardFooter className="flex justify-end gap-4 border-t pt-6">
+          <Button variant="outline" type="button">
+            Cancel
+          </Button>
+          <Button type="submit" disabled={isSubmitting} className="min-w-[100px]">
+            {isSubmitting ? "Saving..." : "Save Changes"}
+          </Button>
+        </CardFooter>
+      </form>
+    </Card>
   );
 }
