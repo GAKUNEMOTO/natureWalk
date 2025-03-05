@@ -1,15 +1,7 @@
 import React from 'react';
-import LoginForm from "@/components/login-form";
-import { currentUser } from "@/data/auth";
-import { redirect } from "next/navigation";
-import Image from 'next/image';
+import { LoginForm } from './components/LoginForm';
 
 export default async function Page() {
-  const user = currentUser();
-
-  if (await user) {
-    redirect('/dashboard');
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-sky-300 via-green-200 to-yellow-200 flex items-center justify-center px-4">

@@ -1,5 +1,5 @@
 'use server';
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/utils/supabase/server";
 
 export const getNatures = async () => {
   const supabase = createClient();
@@ -16,7 +16,7 @@ export const getNatures = async () => {
 export const getNature = async (id: string) => {
     const supabase = createClient();
 
-    const {data, error} = await supabase.from('natures').select().eq('id', id).single();
+    const {data, error} = await supabase.from('natures').select().eq('id', parseInt(id)).single();
 
     console.log(data);
 

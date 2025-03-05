@@ -1,8 +1,9 @@
 'use server';
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/utils/supabase/server";
 import { currentUser } from "@/data/auth";
-import { TablesInsert, Tables } from "@/types/database";
+import { Tables } from "@/types/database";
+import { TablesInsert } from "@/types/database"; // Assuming TablesInsert is exported from "@/types/database"
 import { NatureItem } from "@/types/nature";
 
 export const createItem = async (formData: TablesInsert<'natures'>): Promise<Tables<'natures'>> => {

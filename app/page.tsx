@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import dynamic from 'next/dynamic';
 import {
@@ -6,10 +7,18 @@ import {
 } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { useAuth } from '@/context/AuthContext';
 
 const FallingLeaves = dynamic(() => import('@/app/animation/fallingleaf'), { ssr: false });
 
 const Home: React.FC = () => {
+  const user = useAuth();
+  console.log(user);
+
+  if(!user) {
+    throw new Error('User not found');
+  }
+
   return (
     <main className="bg-gradient-to-b from-sky-300 via-green-200 to-yellow-200 w-screen h-screen relative overflow-hidden flex items-center justify-center">
       <FallingLeaves count={50} />
@@ -25,11 +34,9 @@ const Home: React.FC = () => {
               さあ、探してみよう自分の癒やしの場所を。
             </span>
           </CardDescription>
-          <Button className="mt-6 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-6 rounded-full text-lg transition-all duration-300 transform hover:scale-105">
-            <Link href='/login'>
-              冒険を始める
-            </Link>
-          </Button>
+          <Link href="/login">
+              <Button className="mt-8">自然を探す</Button>
+          </Link>
         </Card>
       </div>
     </main>

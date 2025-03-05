@@ -1,9 +1,9 @@
-import { createClient } from "@/lib/supabase/client"
+import { createClient } from "@/utils/supabase/client"
 import { notFound } from "next/navigation";
 import Image from 'next/image';
 import { NatureItem } from "@/types/nature";
 import { kenTags, seasonTags } from "@/data/tag";
-import { getTagLabel } from "@/lib/tag";
+import { getTagLabel } from "@/utils/tag";
 import NatureDetailClient from "./components/naturedetail";
 
 export type TagId = {
@@ -15,8 +15,9 @@ function formatDate(date: string) {
   return new Date(date).toLocaleDateString();
 }
 
-const supabase = createClient();
+
 export const revalidate = 0;
+const supabase = createClient();
 
 export async function generateStaticParams() {
   try {
