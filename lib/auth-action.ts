@@ -53,15 +53,32 @@ export async function signup(formData: FormData) {
   redirect("/dashboard");
 }
 
-export async function signout() {
+export async function signOut() {
   const supabase = createClient();
+  
+  // ログアウト処理
   const { error } = await supabase.auth.signOut();
+  
   if (error) {
     console.log(error);
     redirect("/error");
   }
 
-  redirect("/logout");
+  // ローカルストレージをクリア
+  localStorage.clear();
+  
+  // セッションストレージをクリア
+  sessionStorage.clear();
+  
+  // すべてのクッキーを削除
+  document.cookie.split(";").forEach((c) => {
+    document.cookie = c
+      .replace(/^ +/, "")
+      .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+  });
+
+  // ページを完全にリロード
+  window.location.href = '/login'; // または適切なログインページのURL
 }
 
 export async function signInWithGoogle() {

@@ -1,4 +1,5 @@
 'use client';
+import { signOut } from "@/actions/auth";
 import { useAuth } from "@/context/AuthContext";
 import { createClient } from "@/utils/supabase/client";
 import { LogOut, TrashIcon, UserIcon, UserRoundCheck, UserRoundIcon, XIcon } from "lucide-react";
@@ -9,6 +10,8 @@ export default function AvatarToggle() {
     const { user } = useAuth();
     const [showAvatar, setShowAvatar] = useState(false);
     const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    
     
     useEffect(() => {
         const fetchProfileAvatar = async () => {
@@ -24,6 +27,25 @@ export default function AvatarToggle() {
           fetchProfileAvatar();
         }
       }, [user]);
+
+      const handleLogout = async () => {
+        try {
+          setIsLoading(true);
+          setShowAvatar(false);
+          
+          // ローカルの状態をクリア
+          setAvatarUrl(null);
+          
+          await signOut();
+          
+          // 必要に応じて追加のクリーンアップ
+          window.location.reload(); // 完全なページリロード
+        } catch (error) {
+          console.error('Logout error:', error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
     
     return (
         <div className="relative">
@@ -64,11 +86,14 @@ export default function AvatarToggle() {
                 </button>
 
                 <button
-                className="flex items-center space-x-2 mb-2"
-                onClick={() => setShowAvatar(false)}
+                    className="flex items-center space-x-2 mb-2"
+                    onClick={handleLogout}
+                    disabled={isLoading}
                 >
-                <LogOut className="w-4 h-4 text-red-500" />
-                <Link href="/logout" className="text-sm text-red-500">Logout</Link>
+                    <LogOut className="w-4 h-4 text-red-500" />
+                    <span className="text-sm text-red-500">
+                        {isLoading ? 'Logging out...' : 'Logout'}
+                    </span>
                 </button>
             </div>
             </div>

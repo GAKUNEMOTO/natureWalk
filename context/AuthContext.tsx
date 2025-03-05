@@ -1,13 +1,6 @@
 'use client';
 
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-  ReactNode,
-} from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useState, ReactNode } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { createClient } from '@/utils/supabase/client';
 
@@ -30,8 +23,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Supabase クライアントをメモ化して固定する
   const supabase = useMemo(() => createClient(), []);
+
+  const cleanAuth = () => {
+    setSession(null);
+    setUser(null);
+    localStorage.removeItem('session'); // セッション情報も削除
+  };
 
   // 初期セッションの取得
   useEffect(() => {
@@ -40,13 +38,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const { data, error } = await supabase.auth.getSession();
         if (error) {
           console.error('Error fetching session:', error.message);
+          cleanAuth();
         } else {
-          console.log('Initial session:', data.session);
           setSession(data.session);
           setUser(data.session?.user || null);
+          
+          if (data.session) {
+            localStorage.setItem('session', JSON.stringify(data.session));
+          }
         }
       } catch (err) {
         console.error('getSession error:', err);
+        cleanAuth();
       } finally {
         setIsLoading(false);
       }
@@ -58,95 +61,100 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('Auth state changed:', event, session);
+        console.log('Auth state changed:', event);
         
-        setSession(session);
-        setUser(session?.user || null);
+        if (event === 'SIGNED_OUT') {
+          cleanAuth();
+        } else {
+          setSession(session);
+          setUser(session?.user || null);
+          
+          if (session) {
+            localStorage.setItem('session', JSON.stringify(session));
+          }
+        }
       }
     );
 
     return () => {
       authListener?.subscription.unsubscribe();
+      cleanAuth();
     };
   }, [supabase]);
 
-  // OAuth コールバックのハンドリング
-  useEffect(() => {
-    const handleOAuthCallback = async () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.has('code')) {
-        console.log('Handling OAuth callback...');
-        const code = urlParams.get('code');
-        if (code) {
-          await supabase.auth.exchangeCodeForSession(code);
-        }
-        // URL からクエリパラメータを除去
-        window.history.replaceState({}, document.title, window.location.pathname);
-      }
-    };
-    handleOAuthCallback();
-  }, [supabase]);
-
-  useEffect(() => {
-    // セッション情報をローカルストレージに保存
-    if (session) {
-      localStorage.setItem('session', JSON.stringify(session));
-    }
-  }, [session]);
-  
-  // 初期セッション取得時に、ローカルストレージから読み込み
-  useEffect(() => {
-    const storedSessionStr = localStorage.getItem('session');
-    if (storedSessionStr) {
-      try {
-        const storedSession = JSON.parse(storedSessionStr);
-        setSession(storedSession);
-        setUser(storedSession?.user || null);
-      } catch (error) {
-        console.error('Error parsing stored session:', error);
-      }
-    }
-  }, []);
-
+  // セッション自動更新
   useEffect(() => {
     const handleSessionRefresh = async () => {
-      if (session) {
+      if (session?.refresh_token) {
         const currentTime = Math.floor(Date.now() / 1000);
         const expiresAt = session.expires_at;
-  
-        // セッション期限が近づいたら自動更新
-        if (expiresAt && currentTime >= expiresAt - 5 * 60) { // 5分前
+        console.log('Session expires at:', expiresAt);
+
+        if (expiresAt && currentTime >= expiresAt - 5 * 60) {
           try {
             const { data, error } = await supabase.auth.refreshSession({
               refresh_token: session.refresh_token
             });
-  
+
+            if (error) throw error;
+
             if (data.session) {
               setSession(data.session);
               setUser(data.session.user);
-            } else if (error) {
-              console.error('Automatic session refresh failed:', error);
-              // 必要に応じてログアウト処理
-              setSession(null);
-              setUser(null);
+              localStorage.setItem('session', JSON.stringify(data.session));
             }
           } catch (error) {
             console.error('Session refresh error:', error);
+            cleanAuth();
           }
         }
       }
     };
-  
-    // 定期的にセッションをチェック
-    const refreshInterval = setInterval(handleSessionRefresh, 5 * 60 * 1000); // 5分ごと
-  
+
+    const refreshInterval = setInterval(handleSessionRefresh, 1 * 60 * 1000); // 1分ごとにチェック
+
     return () => clearInterval(refreshInterval);
   }, [session, supabase]);
 
+  // OAuth コールバック処理
+  useEffect(() => {
+    const handleOAuthCallback = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
+      
+      if (code) {
+        try {
+          const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+          if (error) throw error;
+          
+          if (data.session) {
+            setSession(data.session);
+            setUser(data.session.user);
+            localStorage.setItem('session', JSON.stringify(data.session));
+          }
+        } catch (error) {
+          console.error('OAuth callback error:', error);
+          cleanAuth();
+        } finally {
+          // クエリパラメータを削除
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+      }
+    };
+
+    handleOAuthCallback();
+  }, [supabase]);
+
+  const value = useMemo(() => ({
+    user,
+    session,
+    setUser,
+    setSession,
+    isLoading
+  }), [user, session, isLoading]);
+
   return (
-    <AuthContext.Provider
-      value={{ user, session, setUser, setSession, isLoading }}
-    >
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
