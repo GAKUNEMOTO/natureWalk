@@ -18,6 +18,7 @@ export type Json =
             tags: string[] | null
             title: string
             user_id: string
+            likes: number
           }
           Insert: {
             createdAt?: string
@@ -27,6 +28,7 @@ export type Json =
             tags?: string[] | null
             title: string
             user_id?: string
+            likes: number
           }
           Update: {
             createdAt?: string
@@ -36,6 +38,7 @@ export type Json =
             tags?: string[] | null
             title?: string
             user_id?: string
+            likes: number
           }
           Relationships: [
             {

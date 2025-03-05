@@ -61,7 +61,8 @@ export default async function NaturePost(props: Props) {
       title: nature.title,
       description: nature.description,
       natureImg: nature.natureImg,
-      tags: nature.tags
+      tags: nature.tags,
+      likes: nature.likes,
     };
 
     const placeTags = natureItem.tags.filter((tag: string) => 

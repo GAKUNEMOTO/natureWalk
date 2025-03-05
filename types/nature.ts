@@ -16,10 +16,10 @@ export type NatureFormData = {
     description: string;
     natureImg: string;
     tags: TagId[];
-    likes?: {
-      count: number;  
-      isLiked?: boolean;  
-  };
+    likes?: number | {  // オプショナルにして、number型も許容
+      count: number;
+      isLiked?: boolean;
+    };
   };
 
   export type NatureCardProps = {
