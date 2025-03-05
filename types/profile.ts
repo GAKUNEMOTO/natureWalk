@@ -1,4 +1,6 @@
 export interface ProfileView {
+    favorite_places: string[] | null;
+    favorite_seasons: string[] | null;
     id: string;
     full_name: string | null;
     bio: string | null;
@@ -17,10 +19,6 @@ export interface ProfileView {
       followers: number;
       followings: number;
       natures: number;
-    };
-    tags: {
-      places: string[];
-      seasons: string[];
     };
   }
   

@@ -1,5 +1,7 @@
 "use client";
 
+import SeasonSelecter from "@/app/nature/components/season-selector";
+import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
 import { profileFormSchema } from "@/schema/schema";
 import { createClient } from "@/utils/supabase/client";
@@ -8,7 +10,9 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { set, z } from "zod";
+import { X } from "lucide-react"; 
+import { Badge } from "@/components/ui/badge";
 
 // Zod スキーマから型を推論
 type ProfileValues = z.infer<typeof profileFormSchema>;
@@ -20,6 +24,10 @@ export default function ProfileEditor() {
 
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedSeasons, setSelectedSeasons] = useState<string[]>([]);
+  const [selectedPlaces, setSelectedPlaces] = useState<string[]>([]);
+  const [placeInput, setPlaceInput] = useState("");
+  const [seasonInput, setSeasonInput] = useState("");
 
   // React Hook Form のセットアップ
   const {
@@ -69,6 +77,13 @@ export default function ProfileEditor() {
       setValue("instagram", data.instagram_url || "");
       setValue("facebook", data.facebook_url || "");
       setValue("twitter", data.twitter_url || "");
+
+      if (data.favorite_places) {
+        setSelectedPlaces(data.favorite_places);
+      }
+      if (data.favorite_seasons) {
+        setSelectedSeasons(data.favorite_seasons);
+      }
     };
     fetchProfile();
   }, [supabase, user, isLoading, setValue]);
@@ -129,28 +144,43 @@ export default function ProfileEditor() {
   async function onSubmit(formData: ProfileValues) {
     if (!user) return;
     setIsSubmitting(true);
-
+  
     try {
       const fullName = `${formData.firstName} ${formData.lastName}`.trim();
-
+      
+      // デバッグ用のログ
+      console.log('Submitting data:', {
+        id: user.id,
+        full_name: fullName,
+        favorite_places: selectedPlaces,  // カラム名を修正
+        favorite_seasons: selectedSeasons,  // カラム名を修正
+        bio: formData.bio,
+        avatar_url: avatarUrl,
+        instagram_url: formData.instagram,
+        facebook_url: formData.facebook,
+        twitter_url: formData.twitter,
+      });
+  
       const { error } = await supabase
         .from("profiles")
         .upsert({
           id: user.id,
           full_name: fullName,
-          email: user.email,
+          favorite_places: selectedPlaces,  // favoritePlaces → favorite_place
+          favorite_seasons: selectedSeasons,  // favoriteSeasons → favorite_season
           bio: formData.bio,
           avatar_url: avatarUrl,
           instagram_url: formData.instagram,
           facebook_url: formData.facebook,
           twitter_url: formData.twitter,
         });
-
+  
       if (error) {
-        throw new Error("Error updating profile");
+        console.error('Supabase error:', error);  // エラーの詳細をログ出力
+        throw error;
       }
-
-      console.log("Profile updated");
+  
+      console.log("Profile updated successfully");
       router.push("/profile");
     } catch (err) {
       console.error("Error updating profile:", err);
@@ -158,6 +188,44 @@ export default function ProfileEditor() {
       setIsSubmitting(false);
     }
   }
+
+  const handleAddPlace = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && placeInput.trim()) {
+      e.preventDefault();
+      const newPlace = placeInput.trim();
+      // 重複チェックを追加
+      if (selectedSeasons.includes(newPlace)) {
+        // トースト通知や警告メッセージを表示
+        alert('この季節は既に追加されています');
+      } else {
+        setSelectedPlaces([...selectedPlaces, newPlace]);
+      }
+      setPlaceInput("");
+    }
+  };
+  
+  const handleAddSeason = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && seasonInput.trim()) {
+      e.preventDefault();
+      const newSeason = seasonInput.trim();
+      
+      if (selectedSeasons.includes(newSeason)) {
+        // トースト通知や警告メッセージを表示
+        alert('この季節は既に追加されています');
+      } else {
+        setSelectedSeasons([...selectedSeasons, newSeason]);
+      }
+      setSeasonInput("");
+    }
+  };
+
+  const removePlace = (placeToRemove: string) => {
+    setSelectedPlaces(selectedPlaces.filter(place => place !== placeToRemove));
+  };
+
+  const removeSeason = (seasonToRemove: string) => {
+    setSelectedSeasons(selectedSeasons.filter(season => season !== seasonToRemove));
+  };
 
   // ローディング表示
   if (isLoading) {
@@ -237,6 +305,70 @@ export default function ProfileEditor() {
         {errors.bio && (
           <p className="text-red-500 text-sm">{errors.bio.message}</p>
         )}
+      </div>
+
+      <div className="space-y-2">
+        <label htmlFor="places" className="block font-semibold mb-1">
+          好きな場所
+        </label>
+        <div className="space-y-2">
+          <Input
+            id="places"
+            value={placeInput}
+            onChange={(e) => setPlaceInput(e.target.value)}
+            onKeyDown={handleAddPlace}
+            placeholder="場所を入力してEnterを押してください"
+          />
+          <div className="flex flex-wrap gap-2">
+            {selectedPlaces.map((place) => (
+              <Badge 
+                key={place} 
+                variant="secondary"
+                className="flex items-center gap-1"
+              >
+                {place}
+                <X
+                  className="h-3 w-3 cursor-pointer"
+                  onClick={() => removePlace(place)}
+                />
+              </Badge>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <label htmlFor="seasons" className="block font-semibold mb-1">
+          好きな季節
+        </label>
+        <div className="space-y-2">
+          <Input
+            id="seasons"
+            value={seasonInput}
+            onChange={(e) => setSeasonInput(e.target.value)}
+            onKeyDown={handleAddSeason}
+            placeholder="季節を入力してEnterを押してください"
+          />
+          <div className="flex flex-wrap gap-2">
+            {selectedSeasons.map((season) => (
+              <Badge 
+                key={season} 
+                variant="secondary"
+                className="flex items-center gap-1"
+              >
+                {season}
+                <X
+                  className="h-3 w-3 cursor-pointer"
+                  onClick={() => removeSeason(season)}
+                />
+              </Badge>
+            ))}
+          </div>
+        </div>
+        </div>
+
+      <div>
+        
       </div>
 
       {/* instagram */}
