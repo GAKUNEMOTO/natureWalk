@@ -100,12 +100,6 @@ export const NatureDetailClient: React.FC<NatureDetailClientProps> = ({ item }) 
         </Button>
         {item && (
           <>
-            <Button variant="outline" size="sm" className="flex items-center gap-1" asChild>
-              <Link href={`/dashboard/edit/${item.id}`}>
-                <Edit className="h-4 w-4" />
-                <span>編集</span>
-              </Link>
-            </Button>
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button variant="outline" size="sm" className="flex items-center gap-1 text-red-500 hover:bg-red-50">
