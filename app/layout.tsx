@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/utils/utils";
 import { AuthProvider } from "@/context/AuthContext";
 import { NatureProvider } from "@/context/NatureContext";
+import ToastProvider from "@/context/ToastProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,6 +21,7 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body className={cn(inter.className, 'min-h-dvh')}>
+        <ToastProvider/>
         <AuthProvider>
           <NatureProvider>
               {children}

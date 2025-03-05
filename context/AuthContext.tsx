@@ -1,6 +1,13 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  ReactNode,
+} from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { createClient } from '@/utils/supabase/client';
 
@@ -22,72 +29,71 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const supabase = createClient();
-  console.log('AuthProvider rendered');
-  console.log('User:', user);
-  console.log('Session:', session);
 
-  // 最初の useEffect: セッションを取得する
+  // Supabase クライアントをメモ化して固定する
+  const supabase = useMemo(() => createClient(), []);
+
+  // 初期セッションの取得
   useEffect(() => {
-// getSession() の修正（refreshSession() を削除）
     const getSession = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        console.log("Session:", session);
-
+        const { data, error } = await supabase.auth.getSession();
         if (error) {
-          console.log("Error fetching session:", error.message);
-          setIsLoading(false);
-          return;
+          console.error('Error fetching session:', error.message);
+        } else {
+          console.log('Initial session:', data.session);
+          setSession(data.session);
+          setUser(data.session?.user || null);
         }
-        setSession(session);
-        setUser(session?.user ?? null);
       } catch (err) {
-        console.error(err);
+        console.error('getSession error:', err);
       } finally {
         setIsLoading(false);
       }
     };
     getSession();
-  }, []);
+  }, [supabase]);
 
-  // 2つ目の useEffect: 認証状態の変更を監視する
+  // 認証状態の変更を監視
   useEffect(() => {
-    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state changed:", event, session);
-      
-      if (event === "SIGNED_IN" && session) {
-        console.log("✅ User logged in, refreshing session...");
-        await supabase.auth.refreshSession(); // 🔥 セッションを明示的に更新
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('Auth state changed:', event, session);
+        // SIGNED_IN 時にオプションでセッションを更新（必要な場合）
+        if (event === 'SIGNED_IN' && session) {
+          await supabase.auth.refreshSession();
+        }
+        setSession(session);
+        setUser(session?.user || null);
       }
-  
-      setSession(session);
-      setUser(session?.user ?? null);
-    });
-  
+    );
+
     return () => {
       authListener?.subscription.unsubscribe();
     };
-  }, []);
+  }, [supabase]);
 
+  // OAuth コールバックのハンドリング
   useEffect(() => {
-    const checkOAuthCallback = async () => {
+    const handleOAuthCallback = async () => {
       const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.has("code")) {
-        console.log("🔄 Handling OAuth callback...");
-        const code = urlParams.get("code");
+      if (urlParams.has('code')) {
+        console.log('Handling OAuth callback...');
+        const code = urlParams.get('code');
         if (code) {
           await supabase.auth.exchangeCodeForSession(code);
         }
+        // URL からクエリパラメータを除去
         window.history.replaceState({}, document.title, window.location.pathname);
       }
     };
-  
-    checkOAuthCallback();
-  }, []);
+    handleOAuthCallback();
+  }, [supabase]);
 
   return (
-    <AuthContext.Provider value={{ user, session, setUser, setSession, isLoading }}>
+    <AuthContext.Provider
+      value={{ user, session, setUser, setSession, isLoading }}
+    >
       {children}
     </AuthContext.Provider>
   );
