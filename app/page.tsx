@@ -34,19 +34,9 @@ const Home: React.FC = () => {
               さあ、探してみよう自分の癒やしの場所を。
             </span>
           </CardDescription>
-        {user ? (
-          <Link href='/dashboard'>
-            <Button className="mt-8 bg-emerald-600 hover:bg-emerald-700 text-white font-popone">
-              冒険を始める
-            </Button>
+          <Link href="/login">
+              <Button className="mt-8">自然を探す</Button>
           </Link>
-        ) : (
-          <Link href='/login'>
-            <Button className="mt-8 bg-emerald-600 hover:bg-emerald-700 text-white font-popone">
-              ログイン
-            </Button>
-          </Link>
-        )}
         </Card>
       </div>
     </main>
