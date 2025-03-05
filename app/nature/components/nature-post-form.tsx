@@ -89,7 +89,7 @@ export default function ItemForm() {
         ...data,
         natureImg: urlData.publicUrl,
         tags: [selectedKenTag, selectedSeasonTag].filter(Boolean) as string[],
-        likes: 0, // Add default likes value
+        likes: 0, 
       };
 
       console.log("Creating item with data:", newItemData);

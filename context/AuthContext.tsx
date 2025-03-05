@@ -111,7 +111,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     };
 
-    const refreshInterval = setInterval(handleSessionRefresh, 1 * 60 * 1000); // 1分ごとにチェック
+    const refreshInterval = setInterval(handleSessionRefresh, 1 * 60 * 1000); 
 
     return () => clearInterval(refreshInterval);
   }, [session, supabase]);
@@ -160,6 +160,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   );
 };
 
+// useAuth hook
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (!context) {
