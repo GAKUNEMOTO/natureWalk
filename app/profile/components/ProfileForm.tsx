@@ -7,7 +7,7 @@ import { ProfileView } from '@/types/profile';
 import { createClient } from '@/utils/supabase/client';
 import { Calendar, LayoutDashboard, MapPin, UserCheck } from 'lucide-react';
 import { Badge } from "@/components/ui/badge"
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FaFacebook, FaInstagram, FaTwitter } from 'react-icons/fa';
 import Link from 'next/link';
 export default function ProfileForm(){
@@ -15,46 +15,117 @@ export default function ProfileForm(){
     const [profile, setProfile] = useState<ProfileView | null>(null);
     const supabase = useMemo(() => createClient(), []);
     const [isrefresh, setIsRefresh] = useState(0);
+    const [counts, setCounts] = useState({
+        followers: 0,
+        followings: 0,
+        natures: 0,
+    });
+
+    const fetchCounts = useCallback(async (userId: string) => {
+      try {
+          const [followersResult, followingsResult, naturesResult] = await Promise.all([
+              supabase
+                  .from('follows')
+                  .select('follower_id', { count: 'exact' })
+                  .eq('followed_id', userId),
+              supabase
+                  .from('follows')
+                  .select('followed_id', { count: 'exact' })
+                  .eq('follower_id', userId),
+              supabase
+                  .from('natures')
+                  .select('id', { count: 'exact' })
+                  .eq('user_id', userId),
+          ]);
+          
+          setCounts({
+              followers: followersResult.count ?? 0,
+              followings: followingsResult.count ?? 0,
+              natures: naturesResult.count ?? 0,
+          });
+      } catch (error) {
+          console.error('Error fetching counts:', error);
+          throw new Error('Error fetching counts');
+      }
+  }, [supabase]);
 
     useEffect(() => {
-        if(isLoading || !user) return;
-    
-        const fetchProfile = async () => {
-            try {
-                const { data, error } = await supabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('id', user.id)
-                    .single();
-                
-                if(error) throw error;
-    
-                if(data) {
-                    const viewData: ProfileView = {
-                        ...data,
-                        favorite_places: data.favorite_places || [], // null の場合は空配列
-                        favorite_seasons: data.favorite_seasons || [], // null の場合は空配列
-                        socialMedia: {
-                            instagram: data.instagram_url || '',
-                            facebook: data.facebook_url || '',
-                            twitter: data.twitter_url || '',
-                        },
-                        counts: {
-                            followers: data.followers || 0,
-                            followings: data.followings || 0,
-                            natures: data.natures || 0,
-                        },
-                    };
-                    setProfile(viewData);
-                    console.log('Profile:', viewData);
-                }
-            } catch (err) {
-                console.error('Error fetching profile:', err);
-            }
-        };
-    
-        fetchProfile();
-    }, [supabase, user, isLoading, isrefresh]);
+      if(isLoading || !user) return;
+  
+      const fetchProfile = async () => {
+          try {
+              const { data, error } = await supabase
+                  .from('profiles')
+                  .select('*')
+                  .eq('id', user.id)
+                  .single();
+              
+              if(error) throw error;
+  
+              if(data) {
+                  const viewData: ProfileView = {
+                      ...data,
+                      favorite_places: data.favorite_places || [],
+                      favorite_seasons: data.favorite_seasons || [],
+                      socialMedia: {
+                          instagram: data.instagram_url || '',
+                          facebook: data.facebook_url || '',
+                          twitter: data.twitter_url || '',
+                      },
+                      counts: {
+                          followers: counts.followers,
+                          followings: counts.followings,
+                          natures: counts.natures,
+                      },
+                  };
+                  setProfile(viewData);
+              }
+          } catch (err) {
+              console.error('Error fetching profile:', err);
+          }
+      };
+  
+      // 最初にcountsを取得してから、プロフィールを取得
+      const initializeData = async () => {
+          if (user) {
+              await fetchCounts(user.id);
+              await fetchProfile();
+          }
+      };
+  
+      initializeData();
+  
+      const followsChannel = supabase
+          .channel('follow_changes')
+          .on('postgres_changes', {
+              event: "*",
+              schema: "public",
+              table: "follows",
+              filter: `follower_id=eq.${user.id} OR followed_id=eq.${user.id}`
+          }, async () => {
+              await fetchCounts(user.id);
+              await fetchProfile(); // countsが更新されたら、プロフィールも更新
+          })
+          .subscribe();
+  
+      const natureChannel = supabase
+          .channel('nature_changes')
+          .on('postgres_changes', {
+              event: "*",
+              schema: "public",
+              table: "natures",
+              filter: `user_id=eq.${user.id}`
+          }, async () => {
+              await fetchCounts(user.id);
+              await fetchProfile(); // countsが更新されたら、プロフィールも更新
+          })
+          .subscribe();
+  
+      return () => {
+          void supabase.removeChannel(followsChannel);
+          void supabase.removeChannel(natureChannel);
+      };
+  }, [supabase, user, isLoading, isrefresh, counts, fetchCounts]);
 
     const formatCount = (count: number) => {
         if (count >= 1000) {
@@ -92,19 +163,18 @@ export default function ProfileForm(){
       </CardHeader>
 
       <CardContent className="space-y-6">
-        {/* Stats */}
-        <div className="grid grid-cols-3 gap-4 text-center py-2 border-y">
+      <div className="grid grid-cols-3 gap-4 text-center py-2 border-y">
           <div>
-            <p className="font-bold">{formatCount(profile.counts.followers)}</p>
+            <p className="font-bold">{formatCount(profile?.counts.followers || 0)}</p>
             <p className="text-xs text-muted-foreground">Followers</p>
           </div>
           <div>
-            <p className="font-bold">{formatCount(profile.counts.followings)}</p>
+            <p className="font-bold">{formatCount(profile?.counts.followings || 0)}</p>
             <p className="text-xs text-muted-foreground">Following</p>
           </div>
           <div>
-            <p className="font-bold">{formatCount(profile.counts.natures)}</p>
-            <p className="text-xs text-muted-foreground">Articles</p>
+            <p className="font-bold">{formatCount(profile?.counts.natures || 0)}</p>
+            <p className="text-xs text-muted-foreground">Nature Posts</p>
           </div>
         </div>
 
