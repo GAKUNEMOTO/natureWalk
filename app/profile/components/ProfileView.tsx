@@ -162,7 +162,7 @@ export default function ProfileView({userId}: ProfileViewProps) {
         }
     };
 
-    if (!profile) return <div>Loading...</div>;
+    if (!profile) return <div className="w-full h-screen flex justify-center items-center">Loading...</div>;
 
     return (
         <div className="max-w-4xl mx-auto p-8 bg-white rounded-lg shadow-lg">
