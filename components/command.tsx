@@ -2,10 +2,7 @@
 
 import * as React from "react";
 import {
-  CreditCard,
-  Settings,
   Shrub,
-  User,
 } from "lucide-react";
 
 import {
@@ -15,8 +12,6 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  CommandSeparator,
-  CommandShortcut,
 } from "@/components/ui/command";
 import { Button } from "./ui/button";
 import { NatureItem } from "@/types/nature";
@@ -24,6 +19,17 @@ import Link from "next/link";
 
 export function Command({ items }: { items: NatureItem[] }): JSX.Element {
   const [open, setOpen] = React.useState(false);
+
+  const filterItems = React.useMemo(() => {
+    return items.reduce((acc: NatureItem[], current) => {
+      const exists = acc.find(item => item.title === current.title);
+      if (!exists) {
+        return [...acc, current];
+      }
+      return acc;
+    }, []);
+  }, [items]);
+
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -41,14 +47,11 @@ export function Command({ items }: { items: NatureItem[] }): JSX.Element {
     <>
       <Button
         variant="outline"
-        className="gap-3 text-muted-foreground"
+        className="gap-3 text-muted-foreground w-36"
         size="sm"
         onClick={() => setOpen(true)}
       >
         自然を検索...
-        <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
-          <span className="text-xs">⌘</span>J
-        </kbd>
       </Button>
 
       <CommandDialog open={open} onOpenChange={setOpen}>
@@ -56,7 +59,7 @@ export function Command({ items }: { items: NatureItem[] }): JSX.Element {
         <CommandList>
           <CommandEmpty>見つかりません...</CommandEmpty>
           <CommandGroup heading="Natures">
-            {items.map((item) => (
+            {filterItems.map((item) => (
               <CommandItem
                 key={item.id}
                 className="relative flex items-center px-5 py-2"
@@ -67,24 +70,6 @@ export function Command({ items }: { items: NatureItem[] }): JSX.Element {
                 </Link>
               </CommandItem>
             ))}
-          </CommandGroup>
-          <CommandSeparator />
-          <CommandGroup heading="Settings">
-            <CommandItem className="px-5 py-2 hover:bg-gray-100">
-              <User className="mr-2 h-4 w-4" />
-              <span>Profile</span>
-              <CommandShortcut>⌘P</CommandShortcut>
-            </CommandItem>
-            <CommandItem className="px-5 py-2 hover:bg-gray-100">
-              <CreditCard className="mr-2 h-4 w-4" />
-              <span>Billing</span>
-              <CommandShortcut>⌘B</CommandShortcut>
-            </CommandItem>
-            <CommandItem className="px-5 py-2 hover:bg-gray-100">
-              <Settings className="mr-2 h-4 w-4" />
-              <span>Settings</span>
-              <CommandShortcut>⌘S</CommandShortcut>
-            </CommandItem>
           </CommandGroup>
         </CommandList>
       </CommandDialog>
