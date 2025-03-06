@@ -3,13 +3,14 @@ import { createClient } from "@/utils/supabase/server";
 import ProfileView from "../components/ProfileView";
 import ProfileForm from "../components/ProfileForm";
 
-export default async function ProfilePage({ params }: { params: { id: string } }) {
+export default async function ProfilePage(props: { params: Promise<{ id: string }> }) {
+    const params = await props.params;
     const supabase = createClient();
     const { data: { user }, error } = await supabase.auth.getUser();
-    
+
     // paramsが準備できていることを確認
     const profileId = params?.id;
-    
+
     if (!profileId) {
         return <div>Invalid profile ID</div>;
     }
