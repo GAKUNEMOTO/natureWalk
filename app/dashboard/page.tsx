@@ -33,7 +33,8 @@ export default function Page() {
         description: item.description,
         natureImg: item.natureImg,
         tags: item.tags ?? [],
-        likes: item.likes as number ?? 0
+        likes: item.likes as number ?? 0,
+        user_id: item.user_id,
       })));
     }
     fetchData();

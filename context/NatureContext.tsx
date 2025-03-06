@@ -10,6 +10,15 @@ type NatureItem = {
   description: string;
   natureImg: string;
   tags: TagId[];
+  user_id: string;
+  likes?: number | {
+    count: number;
+    isLiked?: boolean;
+  };
+  profile?: {
+    avatar_url?: string;
+    full_name?: string;
+  };
 };
 
 

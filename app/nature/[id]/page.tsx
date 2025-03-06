@@ -1,3 +1,4 @@
+
 import { createClient } from "@/utils/supabase/client"
 import { notFound } from "next/navigation";
 import Image from 'next/image';
@@ -6,6 +7,8 @@ import { kenTags, seasonTags } from "@/data/tag";
 import { getTagLabel } from "@/utils/tag";
 import { CalendarDays, Leaf, MapPin } from "lucide-react";
 import { NatureDetailClient } from "./components/naturedetail";
+import { useAuth } from "@/context/AuthContext";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 // params の型定義
 type Props = {
@@ -45,14 +48,32 @@ export default async function NaturePost(props: Props) {
   const { id } = params;
 
   try {
+    const numericId = parseInt(id);
+    if (isNaN(numericId)) {
+      return notFound();
+    }
+
+    // クエリを修正: リレーションシップを明示的に指定
     const { data: nature, error } = await supabase
       .from("natures")
-      .select("*")
-      .eq("id", parseInt(id))
+      .select(`
+        *,
+        profiles!fk_natures_user_id (
+          full_name,
+          avatar_url
+        )
+      `)
+      .eq("id", numericId)
       .single();
 
-    if (error || !nature) {
-      notFound();
+    if (error) {
+      console.error("Supabase error:", error);
+      return notFound();
+    }
+
+    if (!nature) {
+      console.log("Nature not found for ID:", id);
+      return notFound();
     }
 
     const natureItem: NatureItem = {
@@ -61,7 +82,9 @@ export default async function NaturePost(props: Props) {
       title: nature.title,
       description: nature.description,
       natureImg: nature.natureImg,
-      tags: nature.tags,
+      tags: nature.tags || [],
+      user_id: nature.user_id,
+      profile: nature.profiles,
       likes: nature.likes,
     };
 
@@ -71,27 +94,48 @@ export default async function NaturePost(props: Props) {
     const seasonTagsFiltered = natureItem.tags.filter((tag: string) => 
       seasonTags.some(seasonTag => seasonTag.id === tag)
     );
+    
 
     return (
-<div className="container mx-auto px-4 py-8 max-w-5xl">
-        <div className="bg-gradient-to-b from-green-50 to-white rounded-2xl shadow-lg overflow-hidden">
-          <div className="relative w-full h-[400px] md:h-[500px]">
+        <div className="container mx-auto px-4 py-8 max-w-5xl">
+                <div className="bg-gradient-to-b from-green-50 to-white rounded-2xl shadow-lg overflow-hidden">
+                <div className="relative w-full h-[400px] md:h-[500px]">
+            {natureItem.profile && (
+                <div className="absolute top-6 left-6 z-10 flex items-center gap-3 bg-black/30 p-3 rounded-full">
+                    <Avatar className="h-12 w-12 border-2 border-white">
+                        <AvatarImage 
+                            className="object-cover" 
+                            src={natureItem.profile.avatar_url || ''} 
+                        />
+                        <AvatarFallback>
+                            {natureItem.profile.full_name?.[0]?.toUpperCase() || 'U'}
+                        </AvatarFallback>
+                    </Avatar>
+                    <span className="text-white font-medium drop-shadow-md">
+                        {natureItem.profile.full_name}
+                    </span>
+                </div>
+            )}
+
             <Image
-              src={natureItem.natureImg || "/placeholder.svg"}
-              alt={natureItem.title || "自然の風景"}
-              fill
-              priority
-              className="object-cover"
+                src={natureItem.natureImg || "/placeholder.svg"}
+                alt={natureItem.title || "自然の風景"}
+                fill
+                priority
+                className="object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+            
             <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-              <h1 className="text-3xl md:text-4xl font-bold mb-2 drop-shadow-md">{natureItem.title}</h1>
-              <div className="flex items-center gap-2 text-sm md:text-base">
-                <CalendarDays className="h-4 w-4" />
-                <span>{formatDate(natureItem.createdAt)}</span>
-              </div>
+                <h1 className="text-3xl md:text-4xl font-bold mb-2 drop-shadow-md">
+                    {natureItem.title}
+                </h1>
+                <div className="flex items-center gap-2 text-sm md:text-base">
+                    <CalendarDays className="h-4 w-4" />
+                    <span>{formatDate(natureItem.createdAt)}</span>
+                </div>
             </div>
-          </div>
+        </div>
 
           <div className="p-6 md:p-8">
             <div className="flex flex-col md:flex-row gap-8">

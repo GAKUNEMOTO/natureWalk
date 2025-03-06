@@ -16,9 +16,14 @@ export type NatureFormData = {
     description: string;
     natureImg: string;
     tags: TagId[];
+    user_id: string;
     likes?: number | {  // オプショナルにして、number型も許容
       count: number;
       isLiked?: boolean;
+    };
+    profile?: {  
+      avatar_url?: string;
+      full_name?: string;
     };
   };
 
