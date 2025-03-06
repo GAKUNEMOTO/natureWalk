@@ -9,6 +9,7 @@ import { CalendarDays, Leaf, MapPin } from "lucide-react";
 import { NatureDetailClient } from "./components/naturedetail";
 import { useAuth } from "@/context/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Link from "next/link";
 
 // params の型定義
 type Props = {
@@ -101,6 +102,7 @@ export default async function NaturePost(props: Props) {
                 <div className="bg-gradient-to-b from-green-50 to-white rounded-2xl shadow-lg overflow-hidden">
                 <div className="relative w-full h-[400px] md:h-[500px]">
             {natureItem.profile && (
+              <Link href={`/profile/${natureItem.user_id}`}>
                 <div className="absolute top-6 left-6 z-10 flex items-center gap-3 bg-black/30 p-3 rounded-full">
                     <Avatar className="h-12 w-12 border-2 border-white">
                         <AvatarImage 
@@ -115,7 +117,9 @@ export default async function NaturePost(props: Props) {
                         {natureItem.profile.full_name}
                     </span>
                 </div>
+              </Link>
             )}
+            
 
             <Image
                 src={natureItem.natureImg || "/placeholder.svg"}
