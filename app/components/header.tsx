@@ -54,8 +54,6 @@ const Header: React.FC = () => {
           
           <Command items={natureItems} />
           
-          <ToggleMode />
-          
           {user ? (
             <AvatarToggle />
           ) : (

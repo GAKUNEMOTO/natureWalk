@@ -3,7 +3,6 @@
 import { Inter } from "next/font/google";
 import "../globals.css";
 import { cn } from "@/utils/utils";
-import { ThemeProvider } from "@/components/theme-provider";
 import Header from "../components/header";
 import Footer from "../components/footer";
 import { Toaster } from "@/components/ui/toaster";
@@ -20,17 +19,10 @@ export default function DashboradLayout({
   return (
       <div className={cn(inter.className, 'min-h-dvh')}>
           <NatureProvider>
-        <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-            >
                 <Header/>   
                 {children}
                 <Footer/>
             <Toaster/>
-        </ThemeProvider>
           </NatureProvider>
         </div>
   );
