@@ -27,20 +27,20 @@ export function SignUpForm() {
           <div className="grid gap-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="first-name">お名前</Label>
-                <Input
-                  name="first-name"
-                  id="first-name"
-                  placeholder="Max"
-                  required
-                />
-              </div>
-              <div className="grid gap-2">
                 <Label htmlFor="last-name">苗字</Label>
                 <Input
                   name="last-name"
                   id="last-name"
-                  placeholder="Robinson"
+                  placeholder="自然"
+                  required
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="first-name">お名前</Label>
+                <Input
+                  name="first-name"
+                  id="first-name"
+                  placeholder="太郎"
                   required
                 />
               </div>
@@ -67,7 +67,7 @@ export function SignUpForm() {
         <div className="mt-4 text-center text-sm">
           既にアカウントを持っていますか?{" "}
           <Link href="/login" className="underline">
-            Sign in
+            Login
           </Link>
         </div>
       </CardContent>

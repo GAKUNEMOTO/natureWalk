@@ -75,7 +75,7 @@ export default function ProfileEditor() {
       setAvatarUrl(data.avatar_url || null);
 
       // full_name を firstName / lastName に分解
-      const [first = "", last = "", ...rest] = (data.full_name ?? "").split(" ");
+      const [last = "", first = "",...rest] = (data.full_name ?? "").split(" ");
       const lastName = rest.length > 0 ? [last, ...rest].join(" ") : last;
 
       setValue("firstName", first);
@@ -153,7 +153,7 @@ export default function ProfileEditor() {
     setIsSubmitting(true);
   
     try {
-      const fullName = `${formData.firstName} ${formData.lastName}`.trim();
+      const fullName = `${formData.lastName} ${formData.firstName} `.trim();
       
       // デバッグ用のログ
       console.log('Submitting data:', {
@@ -279,24 +279,24 @@ export default function ProfileEditor() {
             <div className="space-y-4 flex-1">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="firstName">First Name</Label>
-                  <Input
-                    id="firstName"
-                    placeholder="John"
-                    {...register("firstName", { required: "First name is required" })}
-                  />
-                  {errors.firstName && <p className="text-destructive text-sm">{errors.firstName.message}</p>}
-                </div>
-                <div className="space-y-2">
                   <Label htmlFor="lastName">Last Name</Label>
                   <Input
                     id="lastName"
-                    placeholder="Doe"
+                    placeholder="自然"
                     {...register("lastName", { required: "Last name is required" })}
                   />
                   {errors.lastName && <p className="text-destructive text-sm">{errors.lastName.message}</p>}
                 </div>
               </div>
+                <div className="space-y-2">
+                  <Label htmlFor="firstName">First Name</Label>
+                  <Input
+                    id="firstName"
+                    placeholder="太郎"
+                    {...register("firstName", { required: "First name is required" })}
+                  />
+                  {errors.firstName && <p className="text-destructive text-sm">{errors.firstName.message}</p>}
+                </div>
               <div className="space-y-2">
                 <Label htmlFor="bio">Bio</Label>
                 <Textarea
