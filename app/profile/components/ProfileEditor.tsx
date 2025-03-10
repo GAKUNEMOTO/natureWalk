@@ -74,12 +74,12 @@ export default function ProfileEditor() {
       // avatar_url
       setAvatarUrl(data.avatar_url || null);
 
-      // full_name を firstName / lastName に分解
-      const [last = "", first = "",...rest] = (data.full_name ?? "").split(" ");
-      const lastName = rest.length > 0 ? [last, ...rest].join(" ") : last;
+      const nameParts = (data.full_name ?? "").split(" ");
+      const lastName = nameParts[0] || "";  // 最初の部分を苗字として取得
+      const firstName = nameParts[1] || ""; // 2番目の部分を名前として取得
 
-      setValue("firstName", first);
-      setValue("lastName", lastName);
+      setValue("lastName", lastName);   
+      setValue("firstName", firstName); 
       setValue("bio", data.bio || "");
       setValue("instagram", data.instagram_url || "");
       setValue("facebook", data.facebook_url || "");
@@ -283,7 +283,7 @@ export default function ProfileEditor() {
                   <Input
                     id="lastName"
                     placeholder="自然"
-                    {...register("lastName", { required: "Last name is required" })}
+                    {...register("lastName", { required: "苗字を入力してください" })}
                   />
                   {errors.lastName && <p className="text-destructive text-sm">{errors.lastName.message}</p>}
                 </div>
@@ -293,7 +293,7 @@ export default function ProfileEditor() {
                   <Input
                     id="firstName"
                     placeholder="太郎"
-                    {...register("firstName", { required: "First name is required" })}
+                    {...register("firstName", { required: "名前を入力してください" })}
                   />
                   {errors.firstName && <p className="text-destructive text-sm">{errors.firstName.message}</p>}
                 </div>
