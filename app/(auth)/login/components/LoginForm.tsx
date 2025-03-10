@@ -44,7 +44,7 @@ export function LoginForm() {
               <Button type="submit" formAction={login} className="w-full">
                 Login
               </Button>
-             <SignInWithGoogleButton/> 
+             {/* <SignInWithGoogleButton/>  */}
             </div>
         </form>
         <div className="mt-4 text-center text-sm">
