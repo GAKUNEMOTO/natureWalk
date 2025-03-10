@@ -11,6 +11,7 @@ import { useAuth } from "@/context/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 
+
 // params の型定義
 type Props = {
   params: Promise<{
@@ -23,12 +24,16 @@ function formatDate(date: string) {
 }
 
 const supabase = createClient();
-export const dynamicParams = false;
+export const dynamic = 'force-dynamic'; 
+export const dynamicParams = true;
+export const revalidate = 0;
 
 // generateStaticParams を async 関数として定義
 export async function generateStaticParams() {
   try {
-    const { data: natures, error } = await supabase.from("natures").select("id");
+    const { data: natures, error } = await supabase
+      .from("natures").select("id")
+      .order('created_at', { ascending: false }) ;
 
     if (error || !natures) {
       return [];
@@ -53,8 +58,8 @@ export default async function NaturePost(props: Props) {
     if (isNaN(numericId)) {
       return notFound();
     }
-
-    // クエリを修正: リレーションシップを明示的に指定
+    
+       // Supabaseクエリの最適化
     const { data: nature, error } = await supabase
       .from("natures")
       .select(`
@@ -210,3 +215,7 @@ export default async function NaturePost(props: Props) {
     notFound();
   }
 }
+
+export const config = {
+  matcher: '/nature/:path*',
+};
