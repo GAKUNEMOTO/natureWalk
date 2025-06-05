@@ -10,15 +10,16 @@ export async function login(formData: FormData) {
 
   // type-casting here for convenience
   // in practice, you should validate your inputs
+  await new Promise((resolve) => setTimeout(resolve, 1000)); 
+
   const data = {
     email: formData.get("email") as string,
     password: formData.get("password") as string,
   };
 
   const { error } = await supabase.auth.signInWithPassword(data);
-
   if (error) {
-    redirect("/error");
+    throw new Error("Invalid email or password");
   }
 
   revalidatePath("/", "layout");
@@ -44,10 +45,7 @@ export async function signup(formData: FormData) {
   };
 
   const { error } = await supabase.auth.signUp(data);
-
-  if (error) {
-    redirect("/error");
-  }
+  
 
   revalidatePath("/", "layout");
   redirect("/dashboard");
